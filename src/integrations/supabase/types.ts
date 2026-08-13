@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      brain_dumps: {
+        Row: {
+          ai_result: Json | null
+          created_at: string
+          id: string
+          kind: string
+          raw_text: string
+          user_id: string
+        }
+        Insert: {
+          ai_result?: Json | null
+          created_at?: string
+          id?: string
+          kind?: string
+          raw_text: string
+          user_id: string
+        }
+        Update: {
+          ai_result?: Json | null
+          created_at?: string
+          id?: string
+          kind?: string
+          raw_text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          created_at: string
+          energy: number | null
+          feeling: string | null
+          helped: string | null
+          id: string
+          mood: number
+          not_helped: string | null
+          thoughts: string | null
+          user_id: string
+          what_happened: string | null
+        }
+        Insert: {
+          created_at?: string
+          energy?: number | null
+          feeling?: string | null
+          helped?: string | null
+          id?: string
+          mood?: number
+          not_helped?: string | null
+          thoughts?: string | null
+          user_id: string
+          what_happened?: string | null
+        }
+        Update: {
+          created_at?: string
+          energy?: number | null
+          feeling?: string | null
+          helped?: string | null
+          id?: string
+          mood?: number
+          not_helped?: string | null
+          thoughts?: string | null
+          user_id?: string
+          what_happened?: string | null
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          area: string
+          created_at: string
+          done: boolean
+          done_at: string | null
+          due_at: string | null
+          id: string
+          notes: string | null
+          priority: string
+          remind_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          area?: string
+          created_at?: string
+          done?: boolean
+          done_at?: string | null
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          remind_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          area?: string
+          created_at?: string
+          done?: boolean
+          done_at?: string | null
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          remind_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
