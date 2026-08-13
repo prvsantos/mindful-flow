@@ -10,33 +10,95 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as GuiasRouteImport } from './routes/guias'
+import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
+import { Route as AuthenticatedMenteRouteImport } from './routes/_authenticated/mente'
+import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiasRoute = GuiasRouteImport.update({
+  id: '/guias',
+  path: '/guias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDiarioRoute = AuthenticatedDiarioRouteImport.update({
+  id: '/diario',
+  path: '/diario',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMenteRoute = AuthenticatedMenteRouteImport.update({
+  id: '/mente',
+  path: '/mente',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/guias': typeof GuiasRoute
+  '/diario': typeof AuthenticatedDiarioRoute
+  '/mente': typeof AuthenticatedMenteRoute
+  '/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/guias': typeof GuiasRoute
+  '/diario': typeof AuthenticatedDiarioRoute
+  '/mente': typeof AuthenticatedMenteRoute
+  '/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/guias': typeof GuiasRoute
+  '/_authenticated/diario': typeof AuthenticatedDiarioRoute
+  '/_authenticated/mente': typeof AuthenticatedMenteRoute
+  '/_authenticated/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/auth' | '/guias' | '/diario' | '/mente' | '/painel'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/auth' | '/guias' | '/diario' | '/mente' | '/painel'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/guias'
+    | '/_authenticated/diario'
+    | '/_authenticated/mente'
+    | '/_authenticated/painel'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  GuiasRoute: typeof GuiasRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +110,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guias': {
+      id: '/guias'
+      path: '/guias'
+      fullPath: '/guias'
+      preLoaderRoute: typeof GuiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/diario': {
+      id: '/_authenticated/diario'
+      path: '/diario'
+      fullPath: '/diario'
+      preLoaderRoute: typeof AuthenticatedDiarioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mente': {
+      id: '/_authenticated/mente'
+      path: '/mente'
+      fullPath: '/mente'
+      preLoaderRoute: typeof AuthenticatedMenteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/painel': {
+      id: '/_authenticated/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
+  AuthenticatedMenteRoute: typeof AuthenticatedMenteRoute
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
+  AuthenticatedMenteRoute: AuthenticatedMenteRoute,
+  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  GuiasRoute: GuiasRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
