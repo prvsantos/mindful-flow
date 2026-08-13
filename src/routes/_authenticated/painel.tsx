@@ -27,6 +27,7 @@ type Task = {
   due_at: string | null;
   remind_at: string | null;
   done: boolean;
+  done_at?: string | null;
   created_at: string;
 };
 
