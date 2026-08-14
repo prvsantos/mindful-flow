@@ -78,7 +78,7 @@ function Mente() {
   return (
     <AppShell
       title="Minha cabeça está uma bagunça"
-      subtitle="Escreva do jeito que sai. A organização é comigo."
+      subtitle="Escreva do jeito que quiser. A organização é comigo."
     >
       <div className="flex gap-2">
         <button
