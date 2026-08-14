@@ -218,10 +218,10 @@ function Painel() {
           <button
             key={f.v}
             onClick={() => setFiltro(f.v)}
-            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
               filtro === f.v
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card text-muted-foreground hover:text-foreground"
+                ? "border-primary bg-primary text-primary-foreground shadow-md"
+                : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
             }`}
           >
             {f.l}
@@ -254,7 +254,7 @@ function Painel() {
                     patch: { done: !t.done, done_at: t.done ? null : new Date().toISOString() },
                   })
                 }
-                className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                className={`mt-0.5 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 transition-all duration-200 hover:scale-110 hover:border-success active:scale-95 ${
                   t.done ? "border-success bg-success text-success-foreground" : "border-border"
                 }`}
               >

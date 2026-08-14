@@ -114,9 +114,9 @@ function Diario() {
                 key={m.v}
                 type="button"
                 onClick={() => setMood(m.v)}
-                className={`flex flex-col items-center gap-1 rounded-xl border px-4 py-2 text-xs transition-colors ${
+                className={`flex cursor-pointer flex-col items-center gap-1 rounded-xl border px-4 py-2 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-95 ${
                   mood === m.v
-                    ? "border-primary bg-secondary text-secondary-foreground"
+                    ? "border-primary bg-secondary text-secondary-foreground shadow-md"
                     : "border-border bg-card text-muted-foreground"
                 }`}
               >

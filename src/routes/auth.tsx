@@ -7,6 +7,7 @@ import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -78,7 +79,8 @@ function AuthPage() {
   }
 
   return (
-    <div className="bg-hero flex min-h-screen items-center justify-center px-4 py-10">
+    <div className="bg-hero relative flex min-h-screen items-center justify-center px-4 py-10">
+      <ThemeToggle className="absolute right-4 top-4" />
       <div className="card-soft w-full max-w-md p-7">
         <div className="bg-gradient-primary mb-5 flex size-11 items-center justify-center rounded-xl text-primary-foreground">
           <Sparkles className="size-6" />
