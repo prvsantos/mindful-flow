@@ -1,8 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Brain, BookHeart, ListChecks, LifeBuoy, Sparkles, Bell } from "lucide-react";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { Brain, BookHeart, ListChecks, LifeBuoy, Sparkles, Bell, Sun, Moon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/auth" });
+    return { user: data.user };
+  },
   head: () => ({
     meta: [
       { title: "Portal OrganizaMente | Organização e foco para TDAH" },
@@ -51,6 +59,8 @@ const PILARES = [
 ];
 
 function Index() {
+  const { isDark, toggle } = useTheme();
+
   return (
     <div className="bg-hero min-h-screen">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
@@ -60,8 +70,14 @@ function Index() {
           </span>
           <span className="font-display font-semibold">OrganizaMente</span>
         </div>
-        <Button asChild variant="ghost">
-          <Link to="/auth">Entrar</Link>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label={isDark ? "Modo claro" : "Modo escuro"}
+          title={isDark ? "Modo claro" : "Modo escuro"}
+          onClick={toggle}
+        >
+          {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
       </header>
 
@@ -78,7 +94,7 @@ function Index() {
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg">
-            <Link to="/auth">Começar agora</Link>
+            <Link to="/painel">Começar agora</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link to="/guias">Ver os guias</Link>
@@ -88,7 +104,10 @@ function Index() {
 
       <section className="mx-auto grid max-w-5xl gap-4 px-4 pb-16 sm:grid-cols-2 lg:grid-cols-4">
         {PILARES.map((p) => (
-          <article key={p.titulo} className="card-soft p-5">
+          <article
+            key={p.titulo}
+            className="card-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 p-5"
+          >
             <p.icon className={`size-6 ${p.cor}`} />
             <h2 className="mt-3 font-display text-lg font-semibold">{p.titulo}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{p.texto}</p>
