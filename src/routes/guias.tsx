@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { GUIAS } from "@/lib/guias";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -41,11 +42,14 @@ function Guias() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-hero">
         <div className="mx-auto max-w-4xl px-4 py-8">
-          <Button asChild variant="ghost" size="sm" className="mb-4 -ml-2">
-            <Link to="/">
-              <ArrowLeft className="size-4" /> Voltar
-            </Link>
-          </Button>
+          <div className="mb-4 flex items-center justify-between">
+            <Button asChild variant="ghost" size="sm" className="-ml-2">
+              <Link to="/">
+                <ArrowLeft className="size-4" /> Voltar
+              </Link>
+            </Button>
+            <ThemeToggle />
+          </div>
           <h1 className="flex items-center gap-2 text-3xl font-bold">
             <BookOpen className="size-7 text-primary" /> Guias práticos
           </h1>
@@ -63,9 +67,9 @@ function Guias() {
             <button
               key={f.v}
               onClick={() => setFiltro(f.v)}
-              className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+              className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-95 ${
                 filtro === f.v
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-primary bg-primary text-primary-foreground shadow-md"
                   : "border-border bg-card text-muted-foreground"
               }`}
             >
