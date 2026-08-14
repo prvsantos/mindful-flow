@@ -3,6 +3,7 @@ import { Brain, BookHeart, ListChecks, LifeBuoy, LogOut, Sparkles } from "lucide
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 
 const NAV = [
   { to: "/painel", label: "Organizar", icon: ListChecks },
@@ -43,18 +44,20 @@ export function AppShell({
               </Link>
             ))}
           </nav>
-          <Button
+          <div className="ml-auto flex items-center gap-1 md:ml-0">
+            <ThemeToggle />
+            <Button
             variant="ghost"
             size="icon"
             aria-label="Sair"
-            className="ml-auto md:ml-0"
             onClick={async () => {
               await supabase.auth.signOut();
               navigate({ to: "/auth" });
             }}
           >
             <LogOut className="size-4" />
-          </Button>
+            </Button>
+          </div>
         </div>
       </header>
 
