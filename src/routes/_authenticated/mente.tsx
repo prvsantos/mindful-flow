@@ -83,18 +83,20 @@ function Mente() {
       <div className="flex gap-2">
         <button
           onClick={() => setTab("dump")}
-          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
-            tab === "dump" ? "bg-primary text-primary-foreground" : "bg-card border border-border"
+          className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
+            tab === "dump"
+              ? "bg-primary text-primary-foreground shadow-md"
+              : "bg-card border border-border hover:border-primary/50"
           }`}
         >
           <Brain className="size-4" /> Descarregar
         </button>
         <button
           onClick={() => setTab("sos")}
-          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
+          className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
             tab === "sos"
-              ? "bg-destructive text-destructive-foreground"
-              : "bg-card border border-border"
+              ? "bg-destructive text-destructive-foreground shadow-md"
+              : "bg-card border border-border hover:border-destructive/50"
           }`}
         >
           <LifeBuoy className="size-4" /> Preciso me organizar agora
