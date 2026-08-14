@@ -242,7 +242,7 @@ function Painel() {
           return (
             <article
               key={t.id}
-              className={`card-soft flex items-start gap-3 p-4 ${
+              className={`card-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg flex items-start gap-3 p-4 ${
                 late ? "alert-pulse border-destructive/50" : ""
               } ${t.done ? "opacity-60" : ""}`}
             >

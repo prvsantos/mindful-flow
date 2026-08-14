@@ -128,42 +128,54 @@ function Diario() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="feeling">O que estou sentindo</Label>
+          <Label htmlFor="feeling">O que estou sentindo?</Label>
           <Input
             id="feeling"
             value={feeling}
             onChange={(e) => setFeeling(e.target.value)}
-            placeholder="irritado, cansado, animado..."
+            placeholder="ex: irritado, cansado, animado, ansioso..."
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="aconteceu">O que aconteceu</Label>
+          <Label htmlFor="aconteceu">O que aconteceu?</Label>
           <Textarea
             id="aconteceu"
             rows={3}
             value={whatHappened}
             onChange={(e) => setWhatHappened(e.target.value)}
             className="resize-none"
+            placeholder="ex: briguei com um colega, perdi o prazo, recebi um elogio..."
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="pensamentos">O que eu estava pensando</Label>
+          <Label htmlFor="pensamentos">O que eu estava pensando?</Label>
           <Textarea
             id="pensamentos"
             rows={3}
             value={thoughts}
             onChange={(e) => setThoughts(e.target.value)}
             className="resize-none"
+            placeholder="ex: 'acho que vou ser demitido', 'ninguém me leva a sério', 'consegui fazer tudo hoje'..."
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="ajudou">O que ajudou</Label>
-            <Input id="ajudou" value={helped} onChange={(e) => setHelped(e.target.value)} />
+            <Label htmlFor="ajudou">O que ajudou?</Label>
+            <Input
+              id="ajudou"
+              value={helped}
+              onChange={(e) => setHelped(e.target.value)}
+              placeholder="ex: pausa de 5 min, respirar, conversar com alguém..."
+            />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="naoajudou">O que não ajudou</Label>
-            <Input id="naoajudou" value={notHelped} onChange={(e) => setNotHelped(e.target.value)} />
+            <Label htmlFor="naoajudou">O que não ajudou?</Label>
+            <Input
+              id="naoajudou"
+              value={notHelped}
+              onChange={(e) => setNotHelped(e.target.value)}
+              placeholder="ex: ficar no celular, pular refeição, cafeína demais..."
+            />
           </div>
         </div>
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
@@ -237,7 +249,7 @@ function Diario() {
               <p className="mt-1 text-sm text-muted-foreground">{e.what_happened}</p>
             ) : null}
             {e.thoughts ? (
-              <p className="mt-1 text-sm text-muted-foreground italic">“{e.thoughts}”</p>
+              <p className="mt-1 text-sm text-muted-foreground italic">"{e.thoughts}"</p>
             ) : null}
             <div className="mt-2 flex flex-wrap gap-2 text-xs">
               {e.helped ? (

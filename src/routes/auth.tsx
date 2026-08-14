@@ -11,13 +11,13 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar | Portal OrganizaMente" },
+      { title: "Bem-vindo ao OrganizaMente | Portal" },
       {
         name: "description",
         content:
           "Acesse o Portal OrganizaMente para organizar tarefas, descarregar pensamentos e registrar como você está.",
       },
-      { property: "og:title", content: "Entrar | Portal OrganizaMente" },
+      { property: "og:title", content: "Bem-vindo ao OrganizaMente" },
       {
         property: "og:description",
         content: "Seu espaço para organizar, lembrar, entender e regular.",
@@ -38,7 +38,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/painel" });
+      if (data.session) navigate({ to: "/" });
     });
   }, [navigate]);
 
@@ -53,11 +53,11 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/painel` },
+          options: { emailRedirectTo: `${window.location.origin}/` },
         });
         if (error) throw error;
       }
-      navigate({ to: "/painel" });
+      navigate({ to: "/" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não consegui autenticar.");
     } finally {
@@ -74,7 +74,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/painel" });
+    navigate({ to: "/" });
   }
 
   return (
@@ -83,9 +83,7 @@ function AuthPage() {
         <div className="bg-gradient-primary mb-5 flex size-11 items-center justify-center rounded-xl text-primary-foreground">
           <Sparkles className="size-6" />
         </div>
-        <h1 className="font-display text-2xl font-bold">
-          {mode === "entrar" ? "Bem-vindo de volta" : "Criar sua conta"}
-        </h1>
+        <h1 className="font-display text-2xl font-bold">Bem-vindo ao OrganizaMente</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Tudo o que você escrever aqui é privado e só seu.
         </p>
