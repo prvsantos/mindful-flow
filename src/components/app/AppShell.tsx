@@ -27,7 +27,7 @@ export function AppShell({
     <div className="min-h-screen bg-background pb-24 md:pb-10">
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
-          <Link to="/painel" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <span className="bg-gradient-primary flex size-9 items-center justify-center rounded-xl text-primary-foreground">
               <Sparkles className="size-5" />
             </span>
