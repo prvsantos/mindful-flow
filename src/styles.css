@@ -242,7 +242,7 @@
 
 @utility card-soft {
   background-color: var(--color-card);
-  background-image: var(--surface-metal);
+  background-image: var(--surface-sheen), var(--surface-metal);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--color-border);
