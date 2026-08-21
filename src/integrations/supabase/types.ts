@@ -29,7 +29,7 @@ export type Database = {
           id?: string
           kind?: string
           raw_text: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           ai_result?: Json | null
@@ -63,7 +63,7 @@ export type Database = {
           mood?: number
           not_helped?: string | null
           thoughts?: string | null
-          user_id: string
+          user_id?: string
           what_happened?: string | null
         }
         Update: {
@@ -105,7 +105,7 @@ export type Database = {
           priority?: string
           remind_at?: string | null
           title: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           area?: string
