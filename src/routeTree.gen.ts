@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as GuiasRouteImport } from './routes/guias'
+import { Route as AuthenticatedAtualizacoesRouteImport } from './routes/_authenticated/atualizacoes'
+import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
 import { Route as AuthenticatedMenteRouteImport } from './routes/_authenticated/mente'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
@@ -36,6 +38,17 @@ const GuiasRoute = GuiasRouteImport.update({
   path: '/guias',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAtualizacoesRoute =
+  AuthenticatedAtualizacoesRouteImport.update({
+    id: '/atualizacoes',
+    path: '/atualizacoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDiarioRoute = AuthenticatedDiarioRouteImport.update({
   id: '/diario',
   path: '/diario',
@@ -56,6 +69,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/atualizacoes': typeof AuthenticatedAtualizacoesRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/mente': typeof AuthenticatedMenteRoute
   '/painel': typeof AuthenticatedPainelRoute
@@ -64,6 +79,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/atualizacoes': typeof AuthenticatedAtualizacoesRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/mente': typeof AuthenticatedMenteRoute
   '/painel': typeof AuthenticatedPainelRoute
@@ -74,21 +91,41 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/_authenticated/atualizacoes': typeof AuthenticatedAtualizacoesRoute
+  '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
   '/_authenticated/mente': typeof AuthenticatedMenteRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/guias' | '/diario' | '/mente' | '/painel'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/guias'
+    | '/atualizacoes'
+    | '/categorias'
+    | '/diario'
+    | '/mente'
+    | '/painel'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/guias' | '/diario' | '/mente' | '/painel'
+  to:
+    | '/'
+    | '/auth'
+    | '/guias'
+    | '/atualizacoes'
+    | '/categorias'
+    | '/diario'
+    | '/mente'
+    | '/painel'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/guias'
+    | '/_authenticated/atualizacoes'
+    | '/_authenticated/categorias'
     | '/_authenticated/diario'
     | '/_authenticated/mente'
     | '/_authenticated/painel'
@@ -131,6 +168,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuiasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/atualizacoes': {
+      id: '/_authenticated/atualizacoes'
+      path: '/atualizacoes'
+      fullPath: '/atualizacoes'
+      preLoaderRoute: typeof AuthenticatedAtualizacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/categorias': {
+      id: '/_authenticated/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/diario': {
       id: '/_authenticated/diario'
       path: '/diario'
@@ -156,12 +207,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAtualizacoesRoute: typeof AuthenticatedAtualizacoesRoute
+  AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
   AuthenticatedMenteRoute: typeof AuthenticatedMenteRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAtualizacoesRoute: AuthenticatedAtualizacoesRoute,
+  AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
   AuthenticatedMenteRoute: AuthenticatedMenteRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
