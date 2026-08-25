@@ -14,6 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCategories } from "@/hooks/use-categories";
+import { useAccess } from "@/hooks/use-access";
+import { colorOf, iconOf } from "@/lib/categories";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   component: Painel,
@@ -31,22 +34,12 @@ type Task = {
   created_at: string;
 };
 
-const AREAS = [
-  { value: "pessoal", label: "Pessoal" },
-  { value: "trabalho", label: "Trabalho" },
-  { value: "outros", label: "Outros" },
-];
 const PRIORIDADES = [
   { value: "alta", label: "Alta" },
   { value: "media", label: "Média" },
   { value: "baixa", label: "Baixa" },
 ];
 
-const areaStyle: Record<string, string> = {
-  pessoal: "bg-area-pessoal/12 text-area-pessoal",
-  trabalho: "bg-area-trabalho/12 text-area-trabalho",
-  outros: "bg-area-outros/12 text-area-outros",
-};
 const prioStyle: Record<string, string> = {
   alta: "bg-destructive/12 text-destructive",
   media: "bg-warning/15 text-accent-foreground",
@@ -61,6 +54,8 @@ function isLate(t: Task) {
 
 function Painel() {
   const qc = useQueryClient();
+  const access = useAccess();
+  const { data: categorias = [] } = useCategories();
   const [title, setTitle] = useState("");
   const [area, setArea] = useState("pessoal");
   const [priority, setPriority] = useState("media");
@@ -72,6 +67,12 @@ function Painel() {
     const i = setInterval(() => forceTick((n) => n + 1), 60_000);
     return () => clearInterval(i);
   }, []);
+
+  useEffect(() => {
+    if (categorias.length && !categorias.some((c) => c.slug === area)) {
+      setArea(categorias[0]!.slug);
+    }
+  }, [categorias, area]);
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["tasks"],
@@ -85,6 +86,10 @@ function Painel() {
       return data as Task[];
     },
   });
+
+  const abertasNaArea = tasks.filter((t) => t.area === area && !t.done).length;
+  const limiteArea = access.maxTasksPerCategory;
+  const bloqueado = limiteArea !== null && abertasNaArea >= limiteArea;
 
   const create = useMutation({
     mutationFn: async () => {
@@ -147,6 +152,13 @@ function Painel() {
   const abertas = tasks.filter((t) => !t.done).length;
   const atrasadas = tasks.filter(isLate).length;
 
+  const filtros = [
+    { v: "todas", l: `Todas (${abertas} abertas)` },
+    { v: "atrasadas", l: `Atrasadas (${atrasadas})`, alerta: true },
+    ...categorias.map((c) => ({ v: c.slug, l: c.label })),
+    { v: "concluidas", l: "Concluídas" },
+  ];
+
   return (
     <AppShell
       title="Organizar"
@@ -155,7 +167,7 @@ function Painel() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (title.trim().length < 2) return;
+          if (title.trim().length < 2 || bloqueado) return;
           create.mutate();
         }}
         className="card-soft space-y-3 p-4"
@@ -167,20 +179,20 @@ function Painel() {
             placeholder="O que precisa acontecer?"
             className="h-11 text-base"
           />
-          <Button type="submit" className="h-11 px-4" disabled={create.isPending}>
+          <Button type="submit" className="h-11 px-4" disabled={create.isPending || bloqueado}>
             <Plus className="size-4" />
             <span className="hidden sm:inline">Adicionar</span>
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           <Select value={area} onValueChange={setArea}>
-            <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="w-[150px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {AREAS.map((a) => (
-                <SelectItem key={a.value} value={a.value}>
-                  {a.label}
+              {categorias.map((c) => (
+                <SelectItem key={c.slug} value={c.slug}>
+                  {c.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -204,29 +216,36 @@ function Painel() {
             className="w-[210px]"
           />
         </div>
+        {limiteArea !== null ? (
+          <p className={`text-xs ${bloqueado ? "text-destructive" : "text-muted-foreground"}`}>
+            Plano {access.label}: {abertasNaArea}/{limiteArea} atividades abertas nesta categoria
+            {bloqueado ? " — conclua ou exclua uma para adicionar outra." : "."}
+          </p>
+        ) : null}
       </form>
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        {[
-          { v: "todas", l: `Todas (${abertas} abertas)` },
-          { v: "atrasadas", l: `Atrasadas (${atrasadas})` },
-          { v: "pessoal", l: "Pessoal" },
-          { v: "trabalho", l: "Trabalho" },
-          { v: "outros", l: "Outros" },
-          { v: "concluidas", l: "Concluídas" },
-        ].map((f) => (
-          <button
-            key={f.v}
-            onClick={() => setFiltro(f.v)}
-            className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
-              filtro === f.v
-                ? "border-primary bg-primary text-primary-foreground shadow-md"
-                : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
-            }`}
-          >
-            {f.l}
-          </button>
-        ))}
+        {filtros.map((f) => {
+          const selecionado = filtro === f.v;
+          const alerta = "alerta" in f && f.alerta;
+          return (
+            <button
+              key={f.v}
+              onClick={() => setFiltro(f.v)}
+              className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
+                selecionado
+                  ? alerta
+                    ? "border-destructive bg-destructive text-destructive-foreground shadow-md"
+                    : "border-primary bg-primary text-primary-foreground shadow-md"
+                  : alerta
+                    ? "border-destructive/40 bg-card text-destructive hover:border-destructive hover:bg-destructive/10"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
+              }`}
+            >
+              {f.l}
+            </button>
+          );
+        })}
       </div>
 
       <div className="mt-4 space-y-3">
@@ -239,6 +258,9 @@ function Painel() {
 
         {visiveis.map((t) => {
           const late = isLate(t);
+          const cat = categorias.find((c) => c.slug === t.area);
+          const cor = colorOf(cat?.color ?? "slate");
+          const Icone = iconOf(cat?.icon ?? "folder");
           return (
             <article
               key={t.id}
@@ -264,8 +286,11 @@ function Painel() {
               <div className="min-w-0 flex-1">
                 <p className={`font-medium ${t.done ? "line-through" : ""}`}>{t.title}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
-                  <span className={`rounded-full px-2 py-0.5 ${areaStyle[t.area]}`}>
-                    {AREAS.find((a) => a.value === t.area)?.label ?? t.area}
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${cor.chip}`}
+                  >
+                    <Icone className="size-3" />
+                    {cat?.label ?? t.area}
                   </span>
                   <span className={`rounded-full px-2 py-0.5 ${prioStyle[t.priority]}`}>
                     {PRIORIDADES.find((p) => p.value === t.priority)?.label ?? t.priority}
@@ -309,9 +334,11 @@ function Painel() {
                   variant="ghost"
                   size="icon"
                   aria-label="Excluir"
+                  title="Excluir atividade"
+                  className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
                   onClick={() => remove.mutate(t.id)}
                 >
-                  <Trash2 className="size-4 text-muted-foreground" />
+                  <Trash2 className="size-4" />
                 </Button>
               </div>
             </article>
