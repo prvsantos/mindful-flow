@@ -6,6 +6,7 @@ import { Brain, LifeBuoy, Plus, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
+import { useAccess } from "@/hooks/use-access";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { organizeThoughts, sosOrganize } from "@/lib/ai.functions";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_authenticated/mente")({
 
 function Mente() {
   const qc = useQueryClient();
+  const access = useAccess();
   const [tab, setTab] = useState<"dump" | "sos">("dump");
   const [dump, setDump] = useState("");
   const [sos, setSos] = useState("");
@@ -80,7 +82,19 @@ function Mente() {
       title="Minha cabeça está uma bagunça"
       subtitle="Escreva do jeito que quiser. A organização é comigo."
     >
-      <div className="flex gap-2">
+      {!access.canUseAI ? (
+        <div className="card-soft mb-4 border-primary/40 p-5">
+          <p className="font-display text-lg font-semibold">
+            🔒 A ajuda da IA é exclusiva dos planos Premium e Owner
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            No plano {access.label} você continua usando o menu Organizar e o Diário normalmente.
+            Para transformar a bagunça da cabeça em plano automaticamente, faça upgrade.
+          </p>
+        </div>
+      ) : null}
+
+      <div className={`flex gap-2 ${access.canUseAI ? "" : "pointer-events-none opacity-50"}`}>
         <button
           onClick={() => setTab("dump")}
           className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
@@ -103,7 +117,7 @@ function Mente() {
         </button>
       </div>
 
-      {tab === "dump" ? (
+      {!access.canUseAI ? null : tab === "dump" ? (
         <div className="mt-4 space-y-4">
           <div className="card-soft p-4">
             <Textarea
