@@ -4,6 +4,8 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { GUIAS } from "@/lib/guias";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
+import { useAccess } from "@/hooks/use-access";
+import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/guias")({
   head: () => ({
@@ -35,8 +37,13 @@ const FILTROS = [
 ];
 
 function Guias() {
+  const access = useAccess();
   const [filtro, setFiltro] = useState("todos");
-  const lista = GUIAS.filter((g) => filtro === "todos" || g.contexto === filtro);
+  const permitido = (ctx: string) =>
+    access.guideContexts === null || access.guideContexts.includes(ctx);
+  const lista = GUIAS.filter(
+    (g) => permitido(g.contexto) && (filtro === "todos" || g.contexto === filtro),
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,20 +70,30 @@ function Guias() {
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         <div className="flex flex-wrap gap-2">
-          {FILTROS.map((f) => (
+          {FILTROS.map((f) => {
+            const bloqueado = f.v !== "todos" && !permitido(f.v);
+            return (
             <button
               key={f.v}
+              disabled={bloqueado}
               onClick={() => setFiltro(f.v)}
               className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-95 ${
                 filtro === f.v
                   ? "border-primary bg-primary text-primary-foreground shadow-md"
                   : "border-border bg-card text-muted-foreground"
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0`}
             >
+              {bloqueado ? <Lock className="mr-1 inline size-3" /> : null}
               {f.l}
             </button>
-          ))}
+            );
+          })}
         </div>
+        {access.guideContexts ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            🔒 No plano {access.label} os guias liberados são Pessoal e Trabalho.
+          </p>
+        ) : null}
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {lista.map((g) => (

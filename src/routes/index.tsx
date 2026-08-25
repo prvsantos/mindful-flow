@@ -1,7 +1,7 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Brain, BookHeart, ListChecks, LifeBuoy, Sparkles, Bell, Sun, Moon } from "lucide-react";
+import { Brain, BookHeart, ListChecks, LifeBuoy, Sparkles, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useTheme } from "@/hooks/use-theme";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -59,8 +59,6 @@ const PILARES = [
 ];
 
 function Index() {
-  const { isDark, toggle } = useTheme();
-
   return (
     <div className="bg-hero min-h-screen">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
@@ -70,15 +68,12 @@ function Index() {
           </span>
           <span className="font-display font-semibold">OrganizaMente</span>
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label={isDark ? "Modo claro" : "Modo escuro"}
-          title={isDark ? "Modo claro" : "Modo escuro"}
-          onClick={toggle}
-        >
-          {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/atualizacoes">Atualizações</Link>
+          </Button>
+          <ThemeToggle />
+        </div>
       </header>
 
       <section className="mx-auto max-w-3xl px-4 pt-10 pb-14 text-center">

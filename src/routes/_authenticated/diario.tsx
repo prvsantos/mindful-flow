@@ -6,6 +6,7 @@ import { Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
+import { useAccess } from "@/hooks/use-access";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +39,7 @@ const MOODS = [
 
 function Diario() {
   const qc = useQueryClient();
+  const access = useAccess();
   const [mood, setMood] = useState(3);
   const [feeling, setFeeling] = useState("");
   const [whatHappened, setWhatHappened] = useState("");
@@ -99,6 +101,9 @@ function Diario() {
     onSuccess: (r) => setInsight(r),
     onError: () => toast.error("Não consegui analisar agora."),
   });
+
+  const limite = access.maxJournalEntries;
+  const limiteAtingido = limite !== null && entries.length >= limite;
 
   return (
     <AppShell
@@ -178,14 +183,30 @@ function Diario() {
             />
           </div>
         </div>
-        <Button onClick={() => save.mutate()} disabled={save.isPending}>
+        <Button onClick={() => save.mutate()} disabled={save.isPending || limiteAtingido}>
           Salvar registro
         </Button>
+        {limite !== null ? (
+          <p className={`text-xs ${limiteAtingido ? "text-destructive" : "text-muted-foreground"}`}>
+            Plano {access.label}: {entries.length}/{limite} registros salvos
+            {limiteAtingido ? " — exclua um registro para salvar outro." : "."}
+          </p>
+        ) : null}
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-display text-lg font-semibold">Padrões e autoconhecimento</h2>
-        <Button variant="outline" onClick={() => patterns.mutate()} disabled={patterns.isPending}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            if (!access.canUseAI) {
+              toast("Análise por IA disponível nos planos Premium e Owner.");
+              return;
+            }
+            patterns.mutate();
+          }}
+          disabled={patterns.isPending}
+        >
           <Sparkles className="size-4" />
           {patterns.isPending ? "Analisando..." : "Analisar meus registros"}
         </Button>
@@ -238,10 +259,11 @@ function Diario() {
                 variant="ghost"
                 size="icon"
                 aria-label="Excluir registro"
-                className="ml-auto"
+                title="Excluir registro"
+                className="ml-auto text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
                 onClick={() => remove.mutate(e.id)}
               >
-                <Trash2 className="size-4 text-muted-foreground" />
+                <Trash2 className="size-4" />
               </Button>
             </div>
             {e.feeling ? <p className="mt-2 text-sm font-medium">{e.feeling}</p> : null}
