@@ -198,19 +198,20 @@ function Diario() {
         <h2 className="font-display text-lg font-semibold">Padrões e autoconhecimento</h2>
         <Button
           variant="outline"
-          onClick={() => {
-            if (!access.canUseAI) {
-              toast("Análise por IA disponível no plano Premium.");
-              return;
-            }
-            patterns.mutate();
-          }}
-          disabled={patterns.isPending}
+          title={access.canUseAI ? undefined : "Disponível no plano Premium"}
+          onClick={() => patterns.mutate()}
+          disabled={patterns.isPending || !access.canUseAI}
         >
           <Sparkles className="size-4" />
           {patterns.isPending ? "Analisando..." : "Analisar meus registros"}
         </Button>
       </div>
+      {!access.canUseAI ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          🔒 “Analisar meus registros” está disponível no plano Premium.
+        </p>
+      ) : null}
+
 
       {insight ? (
         <div className="card-soft mt-3 space-y-3 p-5">
