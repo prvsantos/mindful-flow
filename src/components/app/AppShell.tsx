@@ -9,6 +9,7 @@ import {
   Sparkles,
   Tags,
   Megaphone,
+  ShieldCheck,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,7 @@ export function AppShell({
 }) {
   const navigate = useNavigate();
   const access = useAccess();
+  const nav = NAV.filter((i) => !("adminOnly" in i && i.adminOnly) || access.isAdmin);
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-10">
@@ -51,7 +53,7 @@ export function AppShell({
             <span className="font-display text-base font-semibold">OrganizaMente</span>
           </Link>
           <nav className="ml-auto hidden items-center gap-1 md:flex">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -92,7 +94,7 @@ export function AppShell({
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur md:hidden">
         <div className="mx-auto flex max-w-2xl overflow-x-auto">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
