@@ -53,7 +53,7 @@ function Atualizacoes() {
 
       {!access.canSeeNews ? (
         <p className="card-soft mt-4 p-4 text-sm text-muted-foreground">
-          🔒 “Novidades & Melhorias” está disponível nos planos Premium e Owner.
+          🔒 “Novidades & Melhorias” está disponível nos plano Premium.
         </p>
       ) : null}
 

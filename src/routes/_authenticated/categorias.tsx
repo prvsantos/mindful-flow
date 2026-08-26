@@ -268,7 +268,7 @@ function IconPicker({
       </Label>
       {locked ? (
         <p className="text-xs text-muted-foreground">
-          Escolher o ícone da categoria está disponível nos planos Premium e Owner.
+          Escolher o ícone da categoria está disponível nos plano Premium.
         </p>
       ) : null}
       <div className="flex flex-wrap gap-2">

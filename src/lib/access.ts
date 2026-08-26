@@ -50,7 +50,7 @@ const PREMIUM: Access = {
   guideContexts: null,
 };
 
-const OWNER: Access = { ...PREMIUM, role: "owner", label: "Owner", isAdmin: true };
+const OWNER: Access = { ...PREMIUM, role: "owner", label: "Administrador", isAdmin: true };
 
 export const ACCESS_BY_ROLE: Record<Role, Access> = {
   lite: LITE,
