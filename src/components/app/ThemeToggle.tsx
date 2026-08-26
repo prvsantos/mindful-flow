@@ -29,7 +29,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       }
       onClick={() => {
         if (!canUseDarkMode) {
-          toast("Modo escuro disponível nos plano Premium.");
+          toast("Modo escuro disponível no plano Premium.");
           return;
         }
         toggle();

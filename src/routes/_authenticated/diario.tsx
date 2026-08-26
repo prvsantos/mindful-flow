@@ -200,7 +200,7 @@ function Diario() {
           variant="outline"
           onClick={() => {
             if (!access.canUseAI) {
-              toast("Análise por IA disponível nos plano Premium.");
+              toast("Análise por IA disponível no plano Premium.");
               return;
             }
             patterns.mutate();
