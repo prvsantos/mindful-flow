@@ -53,7 +53,7 @@ export function AppShell({
               <Link
                 key={item.to}
                 to={item.to}
-                activeOptions={"exact" in item && item.exact ? { exact: true } : undefined}
+                activeOptions={{ exact: "exact" in item && item.exact === true }}
                 className="rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:bg-secondary hover:text-foreground [&.active]:bg-secondary [&.active]:text-secondary-foreground"
               >
                 {item.label}
@@ -94,7 +94,7 @@ export function AppShell({
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={"exact" in item && item.exact ? { exact: true } : undefined}
+              activeOptions={{ exact: "exact" in item && item.exact === true }}
               className="flex min-w-[68px] flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-medium text-muted-foreground [&.active]:text-primary"
             >
               <item.icon className="size-5" />

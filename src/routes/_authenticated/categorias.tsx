@@ -23,11 +23,11 @@ function Categorias() {
   const { data: categorias = [], isLoading } = useCategories();
 
   const [novoNome, setNovoNome] = useState("");
-  const [novaCor, setNovaCor] = useState(COLORS[0]!.key);
+  const [novaCor, setNovaCor] = useState<string>(COLORS[0]!.key);
   const [novoIcone, setNovoIcone] = useState("folder");
   const [editando, setEditando] = useState<string | null>(null);
   const [editNome, setEditNome] = useState("");
-  const [editCor, setEditCor] = useState(COLORS[0]!.key);
+  const [editCor, setEditCor] = useState<string>(COLORS[0]!.key);
   const [editIcone, setEditIcone] = useState("folder");
 
   const cores = access.maxColors ? COLORS.slice(0, access.maxColors) : COLORS;
