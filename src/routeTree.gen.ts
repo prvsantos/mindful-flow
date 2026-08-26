@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as GuiasRouteImport } from './routes/guias'
+import { Route as AuthenticatedAcessosRouteImport } from './routes/_authenticated/acessos'
 import { Route as AuthenticatedAtualizacoesRouteImport } from './routes/_authenticated/atualizacoes'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
@@ -37,6 +38,11 @@ const GuiasRoute = GuiasRouteImport.update({
   id: '/guias',
   path: '/guias',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAcessosRoute = AuthenticatedAcessosRouteImport.update({
+  id: '/acessos',
+  path: '/acessos',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAtualizacoesRoute =
   AuthenticatedAtualizacoesRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/acessos': typeof AuthenticatedAcessosRoute
   '/atualizacoes': typeof AuthenticatedAtualizacoesRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/diario': typeof AuthenticatedDiarioRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/acessos': typeof AuthenticatedAcessosRoute
   '/atualizacoes': typeof AuthenticatedAtualizacoesRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/diario': typeof AuthenticatedDiarioRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/_authenticated/acessos': typeof AuthenticatedAcessosRoute
   '/_authenticated/atualizacoes': typeof AuthenticatedAtualizacoesRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/guias'
+    | '/acessos'
     | '/atualizacoes'
     | '/categorias'
     | '/diario'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/guias'
+    | '/acessos'
     | '/atualizacoes'
     | '/categorias'
     | '/diario'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/guias'
+    | '/_authenticated/acessos'
     | '/_authenticated/atualizacoes'
     | '/_authenticated/categorias'
     | '/_authenticated/diario'
@@ -168,6 +180,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuiasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/acessos': {
+      id: '/_authenticated/acessos'
+      path: '/acessos'
+      fullPath: '/acessos'
+      preLoaderRoute: typeof AuthenticatedAcessosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/atualizacoes': {
       id: '/_authenticated/atualizacoes'
       path: '/atualizacoes'
@@ -207,6 +226,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAcessosRoute: typeof AuthenticatedAcessosRoute
   AuthenticatedAtualizacoesRoute: typeof AuthenticatedAtualizacoesRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
@@ -215,6 +235,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAcessosRoute: AuthenticatedAcessosRoute,
   AuthenticatedAtualizacoesRoute: AuthenticatedAtualizacoesRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
