@@ -22,9 +22,11 @@ const NAV = [
   { to: "/mente", label: "Minha cabeça", icon: Brain },
   { to: "/diario", label: "Diário", icon: BookHeart },
   { to: "/categorias", label: "Categorias", icon: Tags },
-  { to: "/atualizacoes", label: "Atualizações", icon: Megaphone },
+  { to: "/atualizacoes", label: "Atualizações", icon: Megaphone, adminOnly: true },
+  { to: "/acessos", label: "Acessos", icon: ShieldCheck, adminOnly: true },
   { to: "/guias", label: "Guias", icon: LifeBuoy },
 ] as const;
+
 
 export function AppShell({
   title,
