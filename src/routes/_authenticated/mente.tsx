@@ -85,7 +85,7 @@ function Mente() {
       {!access.canUseAI ? (
         <div className="card-soft mb-4 border-primary/40 p-5">
           <p className="font-display text-lg font-semibold">
-            🔒 A ajuda da IA é exclusiva dos planos Premium e Owner
+            🔒 A ajuda da IA é exclusiva do plano Premium
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             No plano {access.label} você continua usando o menu Organizar e o Diário normalmente.
