@@ -26,14 +26,15 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 };
 
 /** Histórico do portal — mais recente primeiro. */
-export const CHANGELOG: ChangeEntry[
+export const CHANGELOG: ChangeEntry[] = [
   {
     data: "2026-08-26T15:30:00-03:00",
     tipo: "seguranca",
     titulo: "Menu Acessos e ajuste dos planos Lite e Premium",
     detalhe:
       "O Owner virou perfil de administrador (não é plano) e agora gerencia os planos Lite e Premium dos usuários no novo menu Acessos. Atualizações passou a ser exclusivo do administrador, a análise do Diário ficou restrita ao Premium e a Homepage e os Guias ganharam botão de sair.",
-  },] = [
+  },
+
   {
     data: "2026-08-24T16:30:00-03:00",
     tipo: "seguranca",
