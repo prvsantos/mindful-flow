@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Brain, BookHeart, ListChecks, LifeBuoy, Sparkles, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
+import { LogoutButton } from "@/components/app/LogoutButton";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -73,6 +74,7 @@ function Index() {
             <Link to="/atualizacoes">Atualizações</Link>
           </Button>
           <ThemeToggle />
+          <LogoutButton />
         </div>
       </header>
 
