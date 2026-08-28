@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen } from "lucide-react";
 import { GUIAS } from "@/lib/guias";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
+import { LogoutButton } from "@/components/app/LogoutButton";
 import { useAccess } from "@/hooks/use-access";
 import { Lock } from "lucide-react";
 
@@ -51,11 +52,14 @@ function Guias() {
         <div className="mx-auto max-w-4xl px-4 py-8">
           <div className="mb-4 flex items-center justify-between">
             <Button asChild variant="ghost" size="sm" className="-ml-2">
-              <Link to="/">
+              <Link to="/painel">
                 <ArrowLeft className="size-4" /> Voltar
               </Link>
             </Button>
-            <ThemeToggle />
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <LogoutButton />
+            </div>
           </div>
           <h1 className="flex items-center gap-2 text-3xl font-bold">
             <BookOpen className="size-7 text-primary" /> Guias práticos

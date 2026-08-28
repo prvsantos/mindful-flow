@@ -2,7 +2,9 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Brain, BookHeart, ListChecks, LifeBuoy, Sparkles, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
+import { LogoutButton } from "@/components/app/LogoutButton";
 import { Button } from "@/components/ui/button";
+import { useAccess } from "@/hooks/use-access";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -59,6 +61,7 @@ const PILARES = [
 ];
 
 function Index() {
+  const access = useAccess();
   return (
     <div className="bg-hero min-h-screen">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-5">
@@ -69,10 +72,13 @@ function Index() {
           <span className="font-display font-semibold">OrganizaMente</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/atualizacoes">Atualizações</Link>
-          </Button>
+          {access.isAdmin ? (
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/atualizacoes">Atualizações</Link>
+            </Button>
+          ) : null}
           <ThemeToggle />
+          <LogoutButton />
         </div>
       </header>
 
