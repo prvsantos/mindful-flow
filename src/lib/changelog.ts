@@ -28,6 +28,14 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-08-29T00:05:00-03:00",
+    tipo: "novidade",
+    titulo: "Modo de teste de perfis e logs com autor",
+    detalhe:
+      "No menu Acessos o administrador escolhe navegar como Admin, Premium ou Lite para conferir o portal do jeito que cada pessoa vê — e os botões continuam ativos mesmo no modo Lite, dá para voltar quando quiser. Os arquivos de log agora mostram quem fez cada alteração.",
+  },
+  {
+
     data: "2026-08-29T00:20:00-03:00",
     tipo: "novidade",
     titulo: "Histórico completo e pasta de logs do portal",
