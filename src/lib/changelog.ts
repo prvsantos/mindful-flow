@@ -28,12 +28,34 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-08-29T00:20:00-03:00",
+    tipo: "novidade",
+    titulo: "Histórico completo e pasta de logs do portal",
+    detalhe:
+      "O menu Atualizações passou a registrar todos os ajustes feitos no portal, inclusive os mais recentes. Também criamos a pasta /logs, com um arquivo por dia (dd.mm.aaaa.txt) e outro só para erros (dd.mm.aaaa_error.txt), num formato simples de ler.",
+  },
+  {
+    data: "2026-08-28T22:40:00-03:00",
+    tipo: "novidade",
+    titulo: "Textos mais leves e acolhedores",
+    detalhe:
+      "Revisamos as frases do portal para soar mais natural: novo subtítulo em Minha cabeça, convite da IA no Premium, mensagens do Diário e de Categorias, e o badge do administrador simplificado.",
+  },
+  {
+    data: "2026-08-27T21:15:00-03:00",
+    tipo: "seguranca",
+    titulo: "Perfil automático e registro de exclusões",
+    detalhe:
+      "Novas contas já entram como Lite e o perfil é reconhecido sozinho a cada acesso, sem limpar cache. O e-mail do administrador fica fixo e toda exclusão de usuário passa por confirmação e fica registrada com data, hora e autor.",
+  },
+  {
     data: "2026-08-26T15:30:00-03:00",
     tipo: "seguranca",
     titulo: "Menu Acessos e ajuste dos planos Lite e Premium",
     detalhe:
       "O Owner virou perfil de administrador (não é plano) e agora gerencia os planos Lite e Premium dos usuários no novo menu Acessos. Atualizações passou a ser exclusivo do administrador, a análise do Diário ficou restrita ao Premium e a Homepage e os Guias ganharam botão de sair.",
   },
+
 
   {
     data: "2026-08-24T16:30:00-03:00",
