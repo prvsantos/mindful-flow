@@ -29,11 +29,14 @@ export function useAccess(): Access & { realRole: Role; viewAs: Role | null; set
     queryFn: async (): Promise<Role> => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return "lite";
+      // Garante/aplica o perfil salvo no banco (admin fixo por e-mail, Lite por padrão).
+      const { data: synced } = await supabase.rpc("sync_my_role");
+      if (synced && ORDER.includes(synced as Role)) return synced as Role;
       const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
       const roles = (data ?? []).map((r) => r.role as Role);
       return ORDER.find((r) => roles.includes(r)) ?? "lite";
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
   });
 
   const effective = realRole === "owner" && viewAs ? viewAs : realRole;
