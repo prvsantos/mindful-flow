@@ -146,8 +146,8 @@ function Acessos() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      disabled={mutate.isPending || !u.role}
-                      onClick={() => mutate.mutate({ userId: u.id, role: null })}
+                      disabled={mutate.isPending || del.isPending}
+                      onClick={() => setToDelete({ id: u.id, email: u.email })}
                       className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
                     >
                       Remover
@@ -159,6 +159,31 @@ function Acessos() {
           })}
         </ul>
       )}
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => (o ? null : setToDelete(null))}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza que deseja excluir o usuário?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {toDelete?.email} e todos os seus dados (tarefas, diário, categorias e anotações) serão
+              apagados definitivamente. A exclusão fica registrada nos logs com data, hora e autor.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={del.isPending}>Não</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={del.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                if (toDelete) del.mutate(toDelete.id);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive"
+            >
+              {del.isPending ? "Excluindo..." : "Sim, excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppShell>
   );
 }
