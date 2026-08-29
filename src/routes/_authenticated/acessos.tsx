@@ -82,7 +82,7 @@ function Acessos() {
   });
 
 
-  if (!access.isAdmin) {
+  if (access.realRole !== "owner") {
     return (
       <AppShell title="Acessos" subtitle="Área restrita ao administrador do portal.">
         <p className="card-soft p-5 text-sm text-muted-foreground">
@@ -97,11 +97,19 @@ function Acessos() {
       title="Acessos"
       subtitle="Atribua ou remova os planos Lite e Premium dos usuários autenticados."
     >
-      {users.isLoading ? (
+      <ModoDeTeste />
+
+      {!access.isAdmin ? (
+        <p className="card-soft mt-4 p-5 text-sm text-muted-foreground">
+          Você está navegando como <strong>{access.label}</strong> só para testar. A lista de usuários
+          volta a aparecer quando escolher o modo Admin aqui em cima. 😉
+        </p>
+      ) : users.isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando usuários...</p>
       ) : users.isError ? (
         <p className="text-sm text-destructive">Não consegui carregar a lista de usuários.</p>
       ) : (
+
         <ul className="space-y-3">
           {(users.data ?? []).map((u) => {
             const isOwner = u.role === "owner";
