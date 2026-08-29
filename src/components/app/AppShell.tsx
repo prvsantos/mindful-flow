@@ -40,7 +40,10 @@ export function AppShell({
 }) {
   const navigate = useNavigate();
   const access = useAccess();
-  const nav = NAV.filter((i) => !("adminOnly" in i && i.adminOnly) || access.isAdmin);
+  const nav = NAV.filter(
+    (i) => !("adminOnly" in i && i.adminOnly) || access.isAdmin || (i.to === "/acessos" && access.realRole === "owner"),
+  );
+
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-10">

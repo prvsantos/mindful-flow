@@ -82,7 +82,7 @@ function Acessos() {
   });
 
 
-  if (!access.isAdmin) {
+  if (access.realRole !== "owner") {
     return (
       <AppShell title="Acessos" subtitle="Área restrita ao administrador do portal.">
         <p className="card-soft p-5 text-sm text-muted-foreground">
@@ -97,11 +97,19 @@ function Acessos() {
       title="Acessos"
       subtitle="Atribua ou remova os planos Lite e Premium dos usuários autenticados."
     >
-      {users.isLoading ? (
+      <ModoDeTeste />
+
+      {!access.isAdmin ? (
+        <p className="card-soft mt-4 p-5 text-sm text-muted-foreground">
+          Você está navegando como <strong>{access.label}</strong> só para testar. A lista de usuários
+          volta a aparecer quando escolher o modo Admin aqui em cima. 😉
+        </p>
+      ) : users.isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando usuários...</p>
       ) : users.isError ? (
         <p className="text-sm text-destructive">Não consegui carregar a lista de usuários.</p>
       ) : (
+
         <ul className="space-y-3">
           {(users.data ?? []).map((u) => {
             const isOwner = u.role === "owner";
@@ -185,5 +193,40 @@ function Acessos() {
         </AlertDialogContent>
       </AlertDialog>
     </AppShell>
+  );
+}
+
+const MODOS = [
+  { v: null, l: "Admin", d: "Acesso total, sem restrições." },
+  { v: "premium" as const, l: "Premium", d: "Tudo liberado, menos a administração." },
+  { v: "lite" as const, l: "Lite", d: "Recursos limitados do plano gratuito." },
+];
+
+function ModoDeTeste() {
+  const { viewAs, setViewAs } = useAccess();
+  return (
+    <div className="card-soft p-4">
+      <p className="font-medium">Testar o portal como…</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Escolha um modo para ver o portal do jeito que o usuário vê. Isso é só visual: seus dados e
+        seu perfil de administrador continuam intactos, e você pode voltar quando quiser.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {MODOS.map((m) => (
+          <button
+            key={m.l}
+            title={m.d}
+            onClick={() => setViewAs(m.v)}
+            className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
+              (viewAs ?? null) === m.v
+                ? "border-primary bg-primary text-primary-foreground shadow-md"
+                : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
+            }`}
+          >
+            {m.l}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
