@@ -164,9 +164,9 @@ function Acessos() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza que deseja excluir o usuário?</AlertDialogTitle>
-            <AlertDialogDescription>
+<AlertDialogDescription>
               {toDelete?.email} e todos os seus dados (tarefas, diário, categorias e anotações) serão
-              apagados definitivamente. A exclusão fica registrada nos logs com data, hora e autor.
+              apagados definitivamente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

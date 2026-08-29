@@ -80,16 +80,16 @@ function Mente() {
   return (
     <AppShell
       title="Minha cabeça está uma bagunça"
-      subtitle="Escreva do jeito que quiser. A organização é comigo."
+      subtitle="Escreva do jeito que quiser. Pode deixar a organização comigo."
     >
       {!access.canUseAI ? (
         <div className="card-soft mb-4 border-primary/40 p-5">
-          <p className="font-display text-lg font-semibold">
-            🔒 A ajuda da IA é exclusiva do plano Premium
+<p className="font-display text-lg font-semibold">
+            Conte com a ajuda da IA no plano Premium 😜
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            No plano {access.label} você continua usando o menu Organizar e o Diário normalmente.
-            Para transformar a bagunça da cabeça em plano automaticamente, faça upgrade.
+            No plano Premium, toda bagunça que está em sua cabeça vira atividades simples e
+            objetivas. Não se preocupe, apenas escreva e deixe que “eu” organizo tudo pra você.
           </p>
         </div>
       ) : null}
