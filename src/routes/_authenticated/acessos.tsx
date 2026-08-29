@@ -195,3 +195,38 @@ function Acessos() {
     </AppShell>
   );
 }
+
+const MODOS = [
+  { v: null, l: "Admin", d: "Acesso total, sem restrições." },
+  { v: "premium" as const, l: "Premium", d: "Tudo liberado, menos a administração." },
+  { v: "lite" as const, l: "Lite", d: "Recursos limitados do plano gratuito." },
+];
+
+function ModoDeTeste() {
+  const { viewAs, setViewAs } = useAccess();
+  return (
+    <div className="card-soft p-4">
+      <p className="font-medium">Testar o portal como…</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Escolha um modo para ver o portal do jeito que o usuário vê. Isso é só visual: seus dados e
+        seu perfil de administrador continuam intactos, e você pode voltar quando quiser.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {MODOS.map((m) => (
+          <button
+            key={m.l}
+            title={m.d}
+            onClick={() => setViewAs(m.v)}
+            className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
+              (viewAs ?? null) === m.v
+                ? "border-primary bg-primary text-primary-foreground shadow-md"
+                : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
+            }`}
+          >
+            {m.l}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
