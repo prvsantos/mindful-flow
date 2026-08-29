@@ -68,6 +68,20 @@ function Acessos() {
     onError: (e: Error) => toast.error(e.message || "Não consegui atualizar o perfil."),
   });
 
+  const removeUser = useServerFn(deletePortalUser);
+  const [toDelete, setToDelete] = useState<{ id: string; email: string } | null>(null);
+
+  const del = useMutation({
+    mutationFn: (userId: string) => removeUser({ data: { userId } }),
+    onSuccess: () => {
+      toast.success("Usuário e dados excluídos. Registro salvo nos logs.");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["portal-users"] });
+    },
+    onError: (e: Error) => toast.error(e.message || "Não consegui excluir o usuário."),
+  });
+
+
   if (!access.isAdmin) {
     return (
       <AppShell title="Acessos" subtitle="Área restrita ao administrador do portal.">
