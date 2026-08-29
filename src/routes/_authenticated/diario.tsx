@@ -108,7 +108,7 @@ function Diario() {
   return (
     <AppShell
       title="Diário"
-      subtitle="Escreva quando fizer sentido. Nenhum dia é obrigatório."
+      subtitle="Escreva quando fizer sentido — aqui não tem dia obrigatório."
     >
       <div className="card-soft space-y-4 p-5">
         <div>

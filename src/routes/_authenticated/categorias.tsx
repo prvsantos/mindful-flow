@@ -92,7 +92,7 @@ function Categorias() {
   return (
     <AppShell
       title="Categorias"
-      subtitle="Organize as áreas da sua vida do seu jeito: nome, cor e ícone."
+      subtitle="Organize as áreas da sua vida do seu jeito. 😊"
     >
       <div className="card-soft flex flex-wrap items-center gap-3 p-4">
         <span className="rounded-full bg-primary/12 px-3 py-1 text-xs font-semibold text-primary">
@@ -296,7 +296,7 @@ function IconPicker({
 function PlanSimulator() {
   const { viewAs, setViewAs } = useAccess();
   const opcoes: { v: Role | null; l: string }[] = [
-    { v: null, l: "Owner (real)" },
+    { v: null, l: "Admin" },
     { v: "premium", l: "Ver como Premium" },
     { v: "lite", l: "Ver como Lite" },
   ];
