@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import {
   Briefcase,
   Folder,
@@ -65,11 +66,11 @@ export function colorOf(key: string) {
 }
 
 /** Estilos inline usados apenas quando a cor é personalizada. */
-export function dotStyle(key: string): React.CSSProperties | undefined {
+export function dotStyle(key: string): CSSProperties | undefined {
   return isCustomColor(key) ? { backgroundColor: key } : undefined;
 }
 
-export function chipStyle(key: string): React.CSSProperties | undefined {
+export function chipStyle(key: string): CSSProperties | undefined {
   return isCustomColor(key) ? { backgroundColor: `${key}22`, color: key } : undefined;
 }
 
