@@ -41,3 +41,17 @@ direciona para ajuda profissional e CVV 188 em sinais de crise.
 
 - Scan de segurança do backend: sem achados.
 - Linter do banco: sem achados.
+
+## Privacidade do conteúdo do usuário (revisão 31.08.2026)
+
+- `tasks`, `brain_dumps`, `journal_entries` e `categories` só respondem para o próprio
+  dono (`auth.uid() = user_id`), em leitura e escrita. **O administrador não tem acesso
+  ao conteúdo escrito por outras pessoas** — não existe política nem consulta que
+  permita isso.
+- As funções administrativas (`src/lib/admin.functions.ts`) usam a chave de serviço
+  apenas para: listar contas (e-mail, provedor, datas de login), atribuir/remover
+  perfil (`user_roles`) e excluir uma conta com seus dados. Nenhuma delas lê o
+  conteúdo das tabelas pessoais.
+- `admin_audit_logs` guarda somente ação, autor, alvo e data/hora — nunca o conteúdo.
+- Execução das funções `sync_my_role()` e `has_role()` foi revogada do papel anônimo;
+  apenas sessões autenticadas podem chamá-las.
