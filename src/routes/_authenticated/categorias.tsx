@@ -10,7 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCategories } from "@/hooks/use-categories";
 import { useAccess } from "@/hooks/use-access";
-import { COLORS, DEFAULT_SLUGS, ICONS, colorOf, iconOf, slugify } from "@/lib/categories";
+import {
+  COLORS,
+  DEFAULT_SLUGS,
+  ICONS,
+  chipStyle,
+  colorOf,
+  dotStyle,
+  iconOf,
+  isCustomColor,
+  slugify,
+} from "@/lib/categories";
 import type { Role } from "@/lib/access";
 
 export const Route = createFileRoute("/_authenticated/categorias")({
@@ -125,7 +135,12 @@ function Categorias() {
           />
         </div>
 
-        <ColorPicker cores={cores} value={novaCor} onChange={setNovaCor} />
+        <ColorPicker
+          cores={cores}
+          value={novaCor}
+          onChange={setNovaCor}
+          allowCustom={access.maxColors === null}
+        />
         <IconPicker
           icones={icones}
           value={novoIcone}
@@ -157,7 +172,12 @@ function Categorias() {
               {emEdicao ? (
                 <div className="space-y-3">
                   <Input value={editNome} onChange={(e) => setEditNome(e.target.value)} />
-                  <ColorPicker cores={cores} value={editCor} onChange={setEditCor} />
+                  <ColorPicker
+                    cores={cores}
+                    value={editCor}
+                    onChange={setEditCor}
+                    allowCustom={access.maxColors === null}
+                  />
                   <IconPicker
                     icones={icones}
                     value={editIcone}
@@ -176,6 +196,7 @@ function Categorias() {
               ) : (
                 <div className="flex items-center gap-3">
                   <span
+                    style={chipStyle(c.color)}
                     className={`flex size-10 items-center justify-center rounded-xl ${cor.chip}`}
                   >
                     <Icone className="size-5" />
@@ -222,30 +243,57 @@ function ColorPicker({
   cores,
   value,
   onChange,
+  allowCustom,
 }: {
   cores: readonly { key: string; label: string; dot: string }[];
   value: string;
   onChange: (v: string) => void;
+  allowCustom: boolean;
 }) {
+  const custom = isCustomColor(value);
   return (
     <div className="space-y-1.5">
       <Label>Cor</Label>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {cores.map((c) => (
           <button
             key={c.key}
             type="button"
             title={c.label}
+            aria-label={c.label}
             onClick={() => onChange(c.key)}
-            className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-95 ${
-              value === c.key ? "border-primary bg-secondary shadow-md" : "border-border bg-card"
+            className={`size-8 cursor-pointer rounded-full border-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${c.dot} ${
+              value === c.key ? "border-primary shadow-md ring-2 ring-primary/40" : "border-transparent"
             }`}
-          >
-            <span className={`size-3.5 rounded-full ${c.dot}`} />
-            {c.label}
-          </button>
+          />
         ))}
+
+        {allowCustom ? (
+          <label
+            title="Cor personalizada"
+            className={`relative flex size-8 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 ${
+              custom ? "border-primary shadow-md ring-2 ring-primary/40" : "border-border"
+            }`}
+            style={custom ? dotStyle(value) : undefined}
+          >
+            {custom ? null : (
+              <span className="absolute inset-0 rounded-full bg-[conic-gradient(red,yellow,lime,aqua,blue,magenta,red)]" />
+            )}
+            <input
+              type="color"
+              aria-label="Escolher cor personalizada"
+              value={custom ? value : "#7c3aed"}
+              onChange={(e) => onChange(e.target.value)}
+              className="absolute inset-0 cursor-pointer opacity-0"
+            />
+          </label>
+        ) : null}
       </div>
+      {allowCustom ? (
+        <p className="text-xs text-muted-foreground">
+          Clique no círculo colorido para abrir a paleta completa e escolher a cor que quiser.
+        </p>
+      ) : null}
     </div>
   );
 }

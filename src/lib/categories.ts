@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import {
   Briefcase,
   Folder,
@@ -52,8 +53,25 @@ export const ICONS: { key: string; label: string; icon: LucideIcon }[] = [
   { key: "sparkles", label: "Ideias", icon: Sparkles },
 ];
 
+/** Cor personalizada (Premium) é guardada como hexadecimal, ex: "#ff8800". */
+export function isCustomColor(key: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(key ?? "");
+}
+
 export function colorOf(key: string) {
+  if (isCustomColor(key)) {
+    return { key, label: "Personalizada", dot: "", chip: "" } as const;
+  }
   return COLORS.find((c) => c.key === key) ?? COLORS[0]!;
+}
+
+/** Estilos inline usados apenas quando a cor é personalizada. */
+export function dotStyle(key: string): CSSProperties | undefined {
+  return isCustomColor(key) ? { backgroundColor: key } : undefined;
+}
+
+export function chipStyle(key: string): CSSProperties | undefined {
+  return isCustomColor(key) ? { backgroundColor: `${key}22`, color: key } : undefined;
 }
 
 export function iconOf(key: string): LucideIcon {

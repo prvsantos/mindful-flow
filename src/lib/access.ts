@@ -28,7 +28,7 @@ const LITE: Access = {
   maxCustomCategories: 2,
   maxColors: 3,
   canPickIcon: false,
-  canUseDarkMode: false,
+  canUseDarkMode: true,
   canUseAI: false,
   canSeeNews: false,
   isAdmin: false,
