@@ -28,6 +28,27 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-08-31T17:30:00-03:00",
+    tipo: "novidade",
+    titulo: "Cores só com bolinhas e paleta personalizada no Premium",
+    detalhe:
+      "Em Categorias as cores agora aparecem só como bolinhas, sem os nomes. No plano Premium dá para abrir a paleta completa e escolher qualquer cor que você quiser.",
+  },
+  {
+    data: "2026-08-31T17:32:00-03:00",
+    tipo: "novidade",
+    titulo: "Modo escuro liberado para todo mundo",
+    detalhe:
+      "Qualquer pessoa autenticada pode alternar entre o tema claro e o escuro, em qualquer página do portal.",
+  },
+  {
+    data: "2026-08-31T17:35:00-03:00",
+    tipo: "seguranca",
+    titulo: "Seus registros continuam só seus",
+    detalhe:
+      "Tarefas, diário, anotações e categorias seguem visíveis apenas para a própria conta. Nem o administrador consegue ler esse conteúdo — a área de Acessos trabalha só com e-mail, perfil e datas de login.",
+  },
+  {
     data: "2026-08-29T00:05:00-03:00",
     tipo: "novidade",
     titulo: "Modo de teste de perfis e logs com autor",
