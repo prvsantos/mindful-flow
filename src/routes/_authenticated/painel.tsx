@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useCategories } from "@/hooks/use-categories";
 import { useAccess } from "@/hooks/use-access";
-import { colorOf, iconOf } from "@/lib/categories";
+import { chipStyle, colorOf, iconOf } from "@/lib/categories";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   component: Painel,
