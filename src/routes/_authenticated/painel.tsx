@@ -287,6 +287,7 @@ function Painel() {
                 <p className={`font-medium ${t.done ? "line-through" : ""}`}>{t.title}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
                   <span
+                    style={chipStyle(cat?.color ?? "slate")}
                     className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${cor.chip}`}
                   >
                     <Icone className="size-3" />
