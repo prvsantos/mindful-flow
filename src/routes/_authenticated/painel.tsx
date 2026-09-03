@@ -137,6 +137,7 @@ function Painel() {
       const { error } = await supabase.from("tasks").insert({
         user_id: userData.user!.id,
         title: title.trim(),
+        notes: notes.trim() ? notes.trim() : null,
         area,
         priority,
         due_at: dueAt ? new Date(dueAt).toISOString() : null,
@@ -145,11 +146,13 @@ function Painel() {
     },
     onSuccess: () => {
       setTitle("");
+      setNotes("");
       setDueAt("");
       qc.invalidateQueries({ queryKey: ["tasks"] });
     },
     onError: () => toast.error("Não consegui salvar a atividade."),
   });
+
 
   const update = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Task> }) => {
