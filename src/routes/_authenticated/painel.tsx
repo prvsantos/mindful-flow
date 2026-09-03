@@ -56,6 +56,11 @@ const prioStyle: Record<string, string> = {
   baixa: "bg-muted text-muted-foreground",
 };
 
+// Limite de caracteres das notas: rápido e objetivo.
+const NOTA_MAX = 100;
+// Até esse tamanho a nota aparece direto no card; acima, abre uma janelinha.
+const NOTA_INLINE_MAX = 60;
+
 function toLocalInput(value: string | null) {
   if (!value) return "";
   const d = new Date(value);
@@ -89,7 +94,7 @@ function Painel() {
     priority: "media",
     dueAt: "",
   });
-  const [notasAbertas, setNotasAbertas] = useState<Record<string, boolean>>({});
+  const [notaModal, setNotaModal] = useState<Task | null>(null);
 
   function abrirEdicao(t: Task) {
     setEditing(t);
@@ -263,13 +268,19 @@ function Painel() {
             <span className="hidden sm:inline">Adicionar</span>
           </Button>
         </div>
-        <Textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Nota (opcional): um detalhe que ajuda a lembrar, tipo 'ligar depois das 14h'"
-          rows={2}
-          className="text-sm"
-        />
+        <div>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Nota (opcional, até 100 caracteres): um detalhe que ajuda a lembrar, tipo 'ligar depois das 14h'"
+            rows={2}
+            maxLength={NOTA_MAX}
+            className="text-sm"
+          />
+          <p className="mt-1 text-right text-[11px] text-muted-foreground">
+            {notes.length}/{NOTA_MAX}
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           <Select value={area} onValueChange={setArea}>
             <SelectTrigger className="w-[150px]">
@@ -487,12 +498,18 @@ function Painel() {
               placeholder="O que precisa acontecer?"
               autoFocus
             />
-            <Textarea
-              value={form.notes}
-              onChange={(e) => setForm((current) => ({ ...current, notes: e.target.value }))}
-              placeholder="Nota (opcional): um detalhe que ajuda a lembrar"
-              rows={4}
-            />
+            <div>
+              <Textarea
+                value={form.notes}
+                onChange={(e) => setForm((current) => ({ ...current, notes: e.target.value }))}
+                placeholder="Nota (opcional, até 100 caracteres)"
+                rows={4}
+                maxLength={NOTA_MAX}
+              />
+              <p className="mt-1 text-right text-[11px] text-muted-foreground">
+                {form.notes.length}/{NOTA_MAX}
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2">
               <Select
                 value={form.area}
