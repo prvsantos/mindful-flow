@@ -32,6 +32,6 @@ dist-ssr
 *.sw?
 
 # Env / credenciais locais
-.env
+!.env
 .env.*
 !.env.example
