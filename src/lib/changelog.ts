@@ -28,6 +28,13 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-09-03T00:30:00-03:00",
+    tipo: "novidade",
+    titulo: "Notas no card e PWA para instalar no celular",
+    detalhe:
+      "As notas agora ficam no canto inferior direito do card: notas curtas aparecem direto, e as maiores (acima de 60 caracteres) ganham um botão 'Ver nota' que abre uma janelinha. Limite de 100 caracteres para manter tudo rápido e objetivo. O portal virou PWA: dá para instalar no celular como um app, com ícone próprio e tela cheia.",
+  },
+  {
     data: "2026-08-31T17:30:00-03:00",
     tipo: "novidade",
     titulo: "Cores só com bolinhas e paleta personalizada no Premium",
