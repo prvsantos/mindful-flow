@@ -30,3 +30,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Env / credenciais locais
+.env
+.env.*
+!.env.example
