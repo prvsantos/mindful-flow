@@ -452,15 +452,17 @@ function Painel() {
               </div>
 
               {t.notes ? (
-                <div className="flex w-full justify-center">
-                  {t.notes.length <= NOTA_INLINE_MAX ? (
+                t.notes.length <= NOTA_INLINE_MAX ? (
+                  <div className="flex w-full justify-center">
                     <p className="flex max-w-full min-w-0 items-start gap-1.5 break-words rounded-xl bg-muted/50 px-3 py-2 text-center text-sm italic text-muted-foreground">
                       <StickyNote className="mt-0.5 size-3.5 shrink-0" />
                       <span className="min-w-0 break-words whitespace-pre-wrap [overflow-wrap:anywhere]">
                         {t.notes}
                       </span>
                     </p>
-                  ) : (
+                  </div>
+                ) : (
+                  <div className="flex w-full justify-end">
                     <Button
                       type="button"
                       variant="secondary"
@@ -470,8 +472,8 @@ function Painel() {
                       <StickyNote className="size-3.5" />
                       Ver nota
                     </Button>
-                  )}
-                </div>
+                  </div>
+                )
               ) : null}
             </article>
           );

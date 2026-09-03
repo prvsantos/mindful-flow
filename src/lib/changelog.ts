@@ -28,6 +28,13 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-09-03T01:15:00-03:00",
+    tipo: "correcao",
+    titulo: "Botão 'Ver nota' no canto inferior direito",
+    detalhe:
+      "Quando a nota é longa, o botão 'Ver nota' ficou no canto inferior direito do card. Notas curtas continuam centralizadas.",
+  },
+  {
     data: "2026-09-03T01:00:00-03:00",
     tipo: "correcao",
     titulo: "Notas centralizadas e janela que cabe em qualquer tela",
