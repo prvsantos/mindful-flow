@@ -557,6 +557,25 @@ function Painel() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={Boolean(notaModal)} onOpenChange={(open) => !open && setNotaModal(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <StickyNote className="size-4" />
+              Nota
+            </DialogTitle>
+          </DialogHeader>
+          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+            {notaModal?.notes}
+          </p>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setNotaModal(null)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
