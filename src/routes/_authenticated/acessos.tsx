@@ -97,7 +97,8 @@ function Acessos() {
       title="Acessos"
       subtitle="Atribua ou remova os planos Lite e Premium dos usuários autenticados."
     >
-      <ModoDeTeste />
+      <div className="space-y-4">
+        <ModoDeTeste />
 
       {!access.isAdmin ? (
         <p className="card-soft mt-4 p-5 text-sm text-muted-foreground">
@@ -167,6 +168,7 @@ function Acessos() {
           })}
         </ul>
       )}
+      </div>
 
       <AlertDialog open={!!toDelete} onOpenChange={(o) => (o ? null : setToDelete(null))}>
         <AlertDialogContent>

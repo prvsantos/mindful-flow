@@ -51,9 +51,9 @@ const PRIORIDADES = [
 ];
 
 const prioStyle: Record<string, string> = {
-  alta: "bg-destructive/12 text-destructive",
-  media: "bg-warning/15 text-accent-foreground",
-  baixa: "bg-muted text-muted-foreground",
+  alta: "bg-red-500/30 text-red-700 dark:text-red-300 font-semibold",
+  media: "bg-amber-500/25 text-amber-700 dark:text-amber-300",
+  baixa: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
 };
 
 // Limite de caracteres das notas: rápido e objetivo.
@@ -272,14 +272,17 @@ function Painel() {
           <Textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Nota (opcional, até 100 caracteres): um detalhe que ajuda a lembrar, tipo 'ligar depois das 14h'"
+            placeholder="Coloque um detalhe que te ajude a lembrar, tipo: 'ligar depois das 14h'"
             rows={2}
             maxLength={NOTA_MAX}
             className="text-sm"
           />
-          <p className="mt-1 text-right text-[11px] text-muted-foreground">
-            {notes.length}/{NOTA_MAX}
-          </p>
+          <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
+            <span>Opcional</span>
+            <span>
+              {notes.length}/{NOTA_MAX}
+            </span>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Select value={area} onValueChange={setArea}>
@@ -550,8 +553,13 @@ function Painel() {
                 className="w-[210px]"
               />
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setEditing(null)}>
+            <DialogFooter className="flex-row justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
+                onClick={() => setEditing(null)}
+              >
                 Cancelar
               </Button>
               <Button type="submit" disabled={saveEdit.isPending || form.title.trim().length < 2}>
@@ -575,11 +583,11 @@ function Painel() {
               {notaModal?.notes}
             </p>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-row justify-end gap-2">
             <Button
               type="button"
               variant="outline"
-              className="w-full sm:w-auto"
+              className="border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
               onClick={() => setNotaModal(null)}
             >
               Fechar

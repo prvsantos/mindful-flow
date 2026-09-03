@@ -28,6 +28,13 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-09-03T15:55:00-03:00",
+    tipo: "novidade",
+    titulo: "Notas mais claras, prioridades vivas e botões ajustados",
+    detalhe:
+      "O campo de nota agora avisa 'Opcional' ao lado do contador de caracteres, com placeholder mais objetivo. As prioridades Alta (vermelho), Média (âmbar) e Baixa (azul) ficaram mais coloridas e visíveis nos dois temas. Botões 'Cancelar' e 'Fechar' ganharam destaque vermelho e passam a se ajustar ao texto no mobile. No menu Acessos, o card de teste de perfis ganhou espaçamento dos demais cards.",
+  },
+  {
     data: "2026-09-03T01:15:00-03:00",
     tipo: "correcao",
     titulo: "Botão 'Ver nota' no canto inferior direito",
