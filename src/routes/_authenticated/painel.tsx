@@ -162,6 +162,42 @@ function Painel() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
+  const saveEdit = useMutation({
+    mutationFn: async ({
+      id,
+      title: nextTitle,
+      notes: nextNotes,
+      area: nextArea,
+      priority: nextPriority,
+      dueAt: nextDueAt,
+    }: {
+      id: string;
+      title: string;
+      notes: string;
+      area: string;
+      priority: string;
+      dueAt: string;
+    }) => {
+      const { error } = await supabase
+        .from("tasks")
+        .update({
+          title: nextTitle.trim(),
+          notes: nextNotes.trim() ? nextNotes.trim() : null,
+          area: nextArea,
+          priority: nextPriority,
+          due_at: nextDueAt ? new Date(nextDueAt).toISOString() : null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setEditing(null);
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success("Atividade atualizada.");
+    },
+    onError: () => toast.error("Não consegui atualizar a atividade."),
+  });
+
   const remove = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("tasks").delete().eq("id", id);
@@ -235,7 +271,6 @@ function Painel() {
           className="text-sm"
         />
         <div className="flex flex-wrap gap-2">
-
           <Select value={area} onValueChange={setArea}>
             <SelectTrigger className="w-[150px]">
               <SelectValue />
@@ -312,10 +347,11 @@ function Painel() {
           const cat = categorias.find((c) => c.slug === t.area);
           const cor = colorOf(cat?.color ?? "slate");
           const Icone = iconOf(cat?.icon ?? "folder");
+          const notaAberta = Boolean(notasAbertas[t.id]);
           return (
             <article
               key={t.id}
-              className={`card-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg flex items-start gap-3 p-4 ${
+              className={`card-soft flex items-start gap-3 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg ${
                 late ? "alert-pulse border-destructive/50" : ""
               } ${t.done ? "opacity-60" : ""}`}
             >
@@ -336,6 +372,30 @@ function Painel() {
 
               <div className="min-w-0 flex-1">
                 <p className={`font-medium ${t.done ? "line-through" : ""}`}>{t.title}</p>
+                {t.notes ? (
+                  <>
+                    <p className="mt-2 hidden whitespace-pre-wrap text-sm text-muted-foreground sm:block">
+                      {t.notes}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="mt-2 sm:hidden"
+                      onClick={() =>
+                        setNotasAbertas((current) => ({ ...current, [t.id]: !current[t.id] }))
+                      }
+                    >
+                      <StickyNote className="size-3.5" />
+                      {notaAberta ? "Ocultar nota" : "Ver nota"}
+                    </Button>
+                    {notaAberta ? (
+                      <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground sm:hidden">
+                        {t.notes}
+                      </p>
+                    ) : null}
+                  </>
+                ) : null}
                 <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
                   <span
                     style={chipStyle(cat?.color ?? "slate")}
@@ -385,6 +445,15 @@ function Painel() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Editar atividade"
+                  title="Editar atividade"
+                  onClick={() => abrirEdicao(t)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label="Excluir"
                   title="Excluir atividade"
                   className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
@@ -397,6 +466,82 @@ function Painel() {
           );
         })}
       </div>
+
+      <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && setEditing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar atividade</DialogTitle>
+            <DialogDescription>Atualize o que precisar e salve quando estiver pronto.</DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!editing || form.title.trim().length < 2) return;
+              saveEdit.mutate({ id: editing.id, ...form });
+            }}
+            className="space-y-4"
+          >
+            <Input
+              value={form.title}
+              onChange={(e) => setForm((current) => ({ ...current, title: e.target.value }))}
+              placeholder="O que precisa acontecer?"
+              autoFocus
+            />
+            <Textarea
+              value={form.notes}
+              onChange={(e) => setForm((current) => ({ ...current, notes: e.target.value }))}
+              placeholder="Nota (opcional): um detalhe que ajuda a lembrar"
+              rows={4}
+            />
+            <div className="flex flex-wrap gap-2">
+              <Select
+                value={form.area}
+                onValueChange={(value) => setForm((current) => ({ ...current, area: value }))}
+              >
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categorias.map((c) => (
+                    <SelectItem key={c.slug} value={c.slug}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={form.priority}
+                onValueChange={(value) => setForm((current) => ({ ...current, priority: value }))}
+              >
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORIDADES.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="datetime-local"
+                value={form.dueAt}
+                onChange={(e) => setForm((current) => ({ ...current, dueAt: e.target.value }))}
+                className="w-[210px]"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditing(null)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saveEdit.isPending || form.title.trim().length < 2}>
+                {saveEdit.isPending ? "Salvando..." : "Salvar alterações"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
