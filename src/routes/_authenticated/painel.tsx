@@ -452,11 +452,13 @@ function Painel() {
               </div>
 
               {t.notes ? (
-                <div className="flex justify-end">
+                <div className="flex w-full justify-center">
                   {t.notes.length <= NOTA_INLINE_MAX ? (
-                    <p className="flex max-w-full items-start gap-1.5 text-right text-sm italic text-muted-foreground">
+                    <p className="flex max-w-full min-w-0 items-start gap-1.5 break-words rounded-xl bg-muted/50 px-3 py-2 text-center text-sm italic text-muted-foreground">
                       <StickyNote className="mt-0.5 size-3.5 shrink-0" />
-                      <span className="line-clamp-3 whitespace-pre-wrap">{t.notes}</span>
+                      <span className="min-w-0 break-words whitespace-pre-wrap [overflow-wrap:anywhere]">
+                        {t.notes}
+                      </span>
                     </p>
                   ) : (
                     <Button
@@ -559,18 +561,25 @@ function Painel() {
       </Dialog>
 
       <Dialog open={Boolean(notaModal)} onOpenChange={(open) => !open && setNotaModal(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-md overflow-hidden">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <StickyNote className="size-4" />
+              <StickyNote className="size-4 shrink-0" />
               Nota
             </DialogTitle>
           </DialogHeader>
-          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-            {notaModal?.notes}
-          </p>
+          <div className="max-h-[50vh] overflow-y-auto rounded-xl bg-muted/50 px-3 py-2">
+            <p className="break-words whitespace-pre-wrap text-sm text-muted-foreground [overflow-wrap:anywhere]">
+              {notaModal?.notes}
+            </p>
+          </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setNotaModal(null)}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => setNotaModal(null)}
+            >
               Fechar
             </Button>
           </DialogFooter>
