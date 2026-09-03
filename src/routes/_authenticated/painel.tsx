@@ -1,12 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Check, Clock, Plus, Trash2, AlarmClock } from "lucide-react";
+import { Check, Clock, Plus, Trash2, AlarmClock, Pencil, StickyNote } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -25,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/painel")({
 type Task = {
   id: string;
   title: string;
+  notes: string | null;
   area: string;
   priority: string;
   due_at: string | null;
@@ -46,11 +56,19 @@ const prioStyle: Record<string, string> = {
   baixa: "bg-muted text-muted-foreground",
 };
 
+function toLocalInput(value: string | null) {
+  if (!value) return "";
+  const d = new Date(value);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function isLate(t: Task) {
   if (t.done) return false;
   if (t.due_at) return new Date(t.due_at).getTime() < Date.now();
   return Date.now() - new Date(t.created_at).getTime() > 24 * 60 * 60 * 1000;
 }
+
 
 function Painel() {
   const qc = useQueryClient();
