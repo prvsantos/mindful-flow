@@ -358,121 +358,119 @@ function Painel() {
           const cat = categorias.find((c) => c.slug === t.area);
           const cor = colorOf(cat?.color ?? "slate");
           const Icone = iconOf(cat?.icon ?? "folder");
-          const notaAberta = Boolean(notasAbertas[t.id]);
           return (
             <article
               key={t.id}
-              className={`card-soft flex items-start gap-3 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg ${
+              className={`card-soft flex flex-col gap-2 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg ${
                 late ? "alert-pulse border-destructive/50" : ""
               } ${t.done ? "opacity-60" : ""}`}
             >
-              <button
-                aria-label="Concluir"
-                onClick={() =>
-                  update.mutate({
-                    id: t.id,
-                    patch: { done: !t.done, done_at: t.done ? null : new Date().toISOString() },
-                  })
-                }
-                className={`mt-0.5 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 transition-all duration-200 hover:scale-110 hover:border-success active:scale-95 ${
-                  t.done ? "border-success bg-success text-success-foreground" : "border-border"
-                }`}
-              >
-                {t.done ? <Check className="size-3.5" /> : null}
-              </button>
+              <div className="flex items-start gap-3">
+                <button
+                  aria-label="Concluir"
+                  onClick={() =>
+                    update.mutate({
+                      id: t.id,
+                      patch: { done: !t.done, done_at: t.done ? null : new Date().toISOString() },
+                    })
+                  }
+                  className={`mt-0.5 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 transition-all duration-200 hover:scale-110 hover:border-success active:scale-95 ${
+                    t.done ? "border-success bg-success text-success-foreground" : "border-border"
+                  }`}
+                >
+                  {t.done ? <Check className="size-3.5" /> : null}
+                </button>
 
-              <div className="min-w-0 flex-1">
-                <p className={`font-medium ${t.done ? "line-through" : ""}`}>{t.title}</p>
-                {t.notes ? (
-                  <>
-                    <p className="mt-2 hidden whitespace-pre-wrap text-sm text-muted-foreground sm:block">
-                      {t.notes}
+                <div className="min-w-0 flex-1">
+                  <p className={`font-medium ${t.done ? "line-through" : ""}`}>{t.title}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
+                    <span
+                      style={chipStyle(cat?.color ?? "slate")}
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${cor.chip}`}
+                    >
+                      <Icone className="size-3" />
+                      {cat?.label ?? t.area}
+                    </span>
+                    <span className={`rounded-full px-2 py-0.5 ${prioStyle[t.priority]}`}>
+                      {PRIORIDADES.find((p) => p.value === t.priority)?.label ?? t.priority}
+                    </span>
+                    {t.due_at ? (
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${
+                          late ? "bg-destructive/12 text-destructive" : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        <Clock className="size-3" />
+                        {new Date(t.due_at).toLocaleString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    ) : null}
+                    {late && !t.due_at ? (
+                      <span className="rounded-full bg-destructive/12 px-2 py-0.5 text-destructive">
+                        parada há mais de 24h
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-1">
+                  {!t.done ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Me lembre em 30 minutos"
+                      title="Me lembre em 30 minutos"
+                      onClick={() => lembrarEm(30, t)}
+                    >
+                      <AlarmClock className="size-4" />
+                    </Button>
+                  ) : null}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Editar atividade"
+                    title="Editar atividade"
+                    onClick={() => abrirEdicao(t)}
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Excluir"
+                    title="Excluir atividade"
+                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
+                    onClick={() => remove.mutate(t.id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {t.notes ? (
+                <div className="flex justify-end">
+                  {t.notes.length <= NOTA_INLINE_MAX ? (
+                    <p className="flex max-w-full items-start gap-1.5 text-right text-sm italic text-muted-foreground">
+                      <StickyNote className="mt-0.5 size-3.5 shrink-0" />
+                      <span className="line-clamp-3 whitespace-pre-wrap">{t.notes}</span>
                     </p>
+                  ) : (
                     <Button
                       type="button"
                       variant="secondary"
                       size="sm"
-                      className="mt-2 sm:hidden"
-                      onClick={() =>
-                        setNotasAbertas((current) => ({ ...current, [t.id]: !current[t.id] }))
-                      }
+                      onClick={() => setNotaModal(t)}
                     >
                       <StickyNote className="size-3.5" />
-                      {notaAberta ? "Ocultar nota" : "Ver nota"}
+                      Ver nota
                     </Button>
-                    {notaAberta ? (
-                      <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground sm:hidden">
-                        {t.notes}
-                      </p>
-                    ) : null}
-                  </>
-                ) : null}
-                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
-                  <span
-                    style={chipStyle(cat?.color ?? "slate")}
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${cor.chip}`}
-                  >
-                    <Icone className="size-3" />
-                    {cat?.label ?? t.area}
-                  </span>
-                  <span className={`rounded-full px-2 py-0.5 ${prioStyle[t.priority]}`}>
-                    {PRIORIDADES.find((p) => p.value === t.priority)?.label ?? t.priority}
-                  </span>
-                  {t.due_at ? (
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${
-                        late ? "bg-destructive/12 text-destructive" : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      <Clock className="size-3" />
-                      {new Date(t.due_at).toLocaleString("pt-BR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  ) : null}
-                  {late && !t.due_at ? (
-                    <span className="rounded-full bg-destructive/12 px-2 py-0.5 text-destructive">
-                      parada há mais de 24h
-                    </span>
-                  ) : null}
+                  )}
                 </div>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-1">
-                {!t.done ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Me lembre em 30 minutos"
-                    title="Me lembre em 30 minutos"
-                    onClick={() => lembrarEm(30, t)}
-                  >
-                    <AlarmClock className="size-4" />
-                  </Button>
-                ) : null}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Editar atividade"
-                  title="Editar atividade"
-                  onClick={() => abrirEdicao(t)}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Excluir"
-                  title="Excluir atividade"
-                  className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
-                  onClick={() => remove.mutate(t.id)}
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </div>
+              ) : null}
             </article>
           );
         })}
