@@ -227,7 +227,15 @@ function Painel() {
             <span className="hidden sm:inline">Adicionar</span>
           </Button>
         </div>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Nota (opcional): um detalhe que ajuda a lembrar, tipo 'ligar depois das 14h'"
+          rows={2}
+          className="text-sm"
+        />
         <div className="flex flex-wrap gap-2">
+
           <Select value={area} onValueChange={setArea}>
             <SelectTrigger className="w-[150px]">
               <SelectValue />
