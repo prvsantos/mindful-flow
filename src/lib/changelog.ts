@@ -28,6 +28,13 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-09-03T01:00:00-03:00",
+    tipo: "correcao",
+    titulo: "Notas centralizadas e janela que cabe em qualquer tela",
+    detalhe:
+      "Notas curtas agora aparecem centralizadas no card, em qualquer tamanho de tela. A janela 'Ver nota' se ajusta à largura do aparelho, o texto longo quebra certinho sem estourar a caixa, e o botão 'Fechar' voltou ao tamanho normal.",
+  },
+  {
     data: "2026-09-03T00:30:00-03:00",
     tipo: "novidade",
     titulo: "Notas no card e PWA para instalar no celular",
