@@ -75,11 +75,33 @@ function Painel() {
   const access = useAccess();
   const { data: categorias = [] } = useCategories();
   const [title, setTitle] = useState("");
+  const [notes, setNotes] = useState("");
   const [area, setArea] = useState("pessoal");
   const [priority, setPriority] = useState("media");
   const [dueAt, setDueAt] = useState("");
   const [filtro, setFiltro] = useState("todas");
   const [, forceTick] = useState(0);
+  const [editing, setEditing] = useState<Task | null>(null);
+  const [form, setForm] = useState({
+    title: "",
+    notes: "",
+    area: "pessoal",
+    priority: "media",
+    dueAt: "",
+  });
+  const [notasAbertas, setNotasAbertas] = useState<Record<string, boolean>>({});
+
+  function abrirEdicao(t: Task) {
+    setEditing(t);
+    setForm({
+      title: t.title,
+      notes: t.notes ?? "",
+      area: t.area,
+      priority: t.priority,
+      dueAt: toLocalInput(t.due_at),
+    });
+  }
+
 
   useEffect(() => {
     const i = setInterval(() => forceTick((n) => n + 1), 60_000);
