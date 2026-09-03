@@ -1,12 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Check, Clock, Plus, Trash2, AlarmClock } from "lucide-react";
+import { Check, Clock, Plus, Trash2, AlarmClock, Pencil, StickyNote } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -25,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/painel")({
 type Task = {
   id: string;
   title: string;
+  notes: string | null;
   area: string;
   priority: string;
   due_at: string | null;
@@ -46,22 +56,52 @@ const prioStyle: Record<string, string> = {
   baixa: "bg-muted text-muted-foreground",
 };
 
+function toLocalInput(value: string | null) {
+  if (!value) return "";
+  const d = new Date(value);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function isLate(t: Task) {
   if (t.done) return false;
   if (t.due_at) return new Date(t.due_at).getTime() < Date.now();
   return Date.now() - new Date(t.created_at).getTime() > 24 * 60 * 60 * 1000;
 }
 
+
 function Painel() {
   const qc = useQueryClient();
   const access = useAccess();
   const { data: categorias = [] } = useCategories();
   const [title, setTitle] = useState("");
+  const [notes, setNotes] = useState("");
   const [area, setArea] = useState("pessoal");
   const [priority, setPriority] = useState("media");
   const [dueAt, setDueAt] = useState("");
   const [filtro, setFiltro] = useState("todas");
   const [, forceTick] = useState(0);
+  const [editing, setEditing] = useState<Task | null>(null);
+  const [form, setForm] = useState({
+    title: "",
+    notes: "",
+    area: "pessoal",
+    priority: "media",
+    dueAt: "",
+  });
+  const [notasAbertas, setNotasAbertas] = useState<Record<string, boolean>>({});
+
+  function abrirEdicao(t: Task) {
+    setEditing(t);
+    setForm({
+      title: t.title,
+      notes: t.notes ?? "",
+      area: t.area,
+      priority: t.priority,
+      dueAt: toLocalInput(t.due_at),
+    });
+  }
+
 
   useEffect(() => {
     const i = setInterval(() => forceTick((n) => n + 1), 60_000);
@@ -97,6 +137,7 @@ function Painel() {
       const { error } = await supabase.from("tasks").insert({
         user_id: userData.user!.id,
         title: title.trim(),
+        notes: notes.trim() ? notes.trim() : null,
         area,
         priority,
         due_at: dueAt ? new Date(dueAt).toISOString() : null,
@@ -105,11 +146,13 @@ function Painel() {
     },
     onSuccess: () => {
       setTitle("");
+      setNotes("");
       setDueAt("");
       qc.invalidateQueries({ queryKey: ["tasks"] });
     },
     onError: () => toast.error("Não consegui salvar a atividade."),
   });
+
 
   const update = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Task> }) => {
@@ -117,6 +160,42 @@ function Painel() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
+  const saveEdit = useMutation({
+    mutationFn: async ({
+      id,
+      title: nextTitle,
+      notes: nextNotes,
+      area: nextArea,
+      priority: nextPriority,
+      dueAt: nextDueAt,
+    }: {
+      id: string;
+      title: string;
+      notes: string;
+      area: string;
+      priority: string;
+      dueAt: string;
+    }) => {
+      const { error } = await supabase
+        .from("tasks")
+        .update({
+          title: nextTitle.trim(),
+          notes: nextNotes.trim() ? nextNotes.trim() : null,
+          area: nextArea,
+          priority: nextPriority,
+          due_at: nextDueAt ? new Date(nextDueAt).toISOString() : null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setEditing(null);
+      qc.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success("Atividade atualizada.");
+    },
+    onError: () => toast.error("Não consegui atualizar a atividade."),
   });
 
   const remove = useMutation({
@@ -184,6 +263,13 @@ function Painel() {
             <span className="hidden sm:inline">Adicionar</span>
           </Button>
         </div>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Nota (opcional): um detalhe que ajuda a lembrar, tipo 'ligar depois das 14h'"
+          rows={2}
+          className="text-sm"
+        />
         <div className="flex flex-wrap gap-2">
           <Select value={area} onValueChange={setArea}>
             <SelectTrigger className="w-[150px]">
@@ -261,10 +347,11 @@ function Painel() {
           const cat = categorias.find((c) => c.slug === t.area);
           const cor = colorOf(cat?.color ?? "slate");
           const Icone = iconOf(cat?.icon ?? "folder");
+          const notaAberta = Boolean(notasAbertas[t.id]);
           return (
             <article
               key={t.id}
-              className={`card-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg flex items-start gap-3 p-4 ${
+              className={`card-soft flex items-start gap-3 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg ${
                 late ? "alert-pulse border-destructive/50" : ""
               } ${t.done ? "opacity-60" : ""}`}
             >
@@ -285,6 +372,30 @@ function Painel() {
 
               <div className="min-w-0 flex-1">
                 <p className={`font-medium ${t.done ? "line-through" : ""}`}>{t.title}</p>
+                {t.notes ? (
+                  <>
+                    <p className="mt-2 hidden whitespace-pre-wrap text-sm text-muted-foreground sm:block">
+                      {t.notes}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="mt-2 sm:hidden"
+                      onClick={() =>
+                        setNotasAbertas((current) => ({ ...current, [t.id]: !current[t.id] }))
+                      }
+                    >
+                      <StickyNote className="size-3.5" />
+                      {notaAberta ? "Ocultar nota" : "Ver nota"}
+                    </Button>
+                    {notaAberta ? (
+                      <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground sm:hidden">
+                        {t.notes}
+                      </p>
+                    ) : null}
+                  </>
+                ) : null}
                 <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
                   <span
                     style={chipStyle(cat?.color ?? "slate")}
@@ -334,6 +445,15 @@ function Painel() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  aria-label="Editar atividade"
+                  title="Editar atividade"
+                  onClick={() => abrirEdicao(t)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label="Excluir"
                   title="Excluir atividade"
                   className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
@@ -346,6 +466,82 @@ function Painel() {
           );
         })}
       </div>
+
+      <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && setEditing(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar atividade</DialogTitle>
+            <DialogDescription>Atualize o que precisar e salve quando estiver pronto.</DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!editing || form.title.trim().length < 2) return;
+              saveEdit.mutate({ id: editing.id, ...form });
+            }}
+            className="space-y-4"
+          >
+            <Input
+              value={form.title}
+              onChange={(e) => setForm((current) => ({ ...current, title: e.target.value }))}
+              placeholder="O que precisa acontecer?"
+              autoFocus
+            />
+            <Textarea
+              value={form.notes}
+              onChange={(e) => setForm((current) => ({ ...current, notes: e.target.value }))}
+              placeholder="Nota (opcional): um detalhe que ajuda a lembrar"
+              rows={4}
+            />
+            <div className="flex flex-wrap gap-2">
+              <Select
+                value={form.area}
+                onValueChange={(value) => setForm((current) => ({ ...current, area: value }))}
+              >
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categorias.map((c) => (
+                    <SelectItem key={c.slug} value={c.slug}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={form.priority}
+                onValueChange={(value) => setForm((current) => ({ ...current, priority: value }))}
+              >
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORIDADES.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="datetime-local"
+                value={form.dueAt}
+                onChange={(e) => setForm((current) => ({ ...current, dueAt: e.target.value }))}
+                className="w-[210px]"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditing(null)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saveEdit.isPending || form.title.trim().length < 2}>
+                {saveEdit.isPending ? "Salvando..." : "Salvar alterações"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
