@@ -51,9 +51,9 @@ const PRIORIDADES = [
 ];
 
 const prioStyle: Record<string, string> = {
-  alta: "bg-red-500/20 text-red-600 dark:text-red-300",
-  media: "bg-amber-500/20 text-amber-600 dark:text-amber-300",
-  baixa: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
+  alta: "bg-red-500/30 text-red-700 dark:text-red-300 font-semibold",
+  media: "bg-amber-500/25 text-amber-700 dark:text-amber-300",
+  baixa: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
 };
 
 // Limite de caracteres das notas: rápido e objetivo.
