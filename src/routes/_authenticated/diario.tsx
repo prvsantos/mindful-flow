@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { findPatterns } from "@/lib/ai.functions";
 import type { PatternInsight } from "@/lib/ai.functions";
+import { AIConsentDialog } from "@/components/app/AIConsentDialog";
+import { useAIPatternsConsent } from "@/hooks/use-consent";
 
 export const Route = createFileRoute("/_authenticated/diario")({
   component: Diario,
@@ -49,6 +51,8 @@ function Diario() {
   const [insight, setInsight] = useState<PatternInsight | null>(null);
 
   const analisar = useServerFn(findPatterns);
+  const consent = useAIPatternsConsent();
+  const [askConsent, setAskConsent] = useState(false);
 
   const { data: entries = [] } = useQuery({
     queryKey: ["journal"],
@@ -85,7 +89,10 @@ function Diario() {
       toast.success("Registro salvo.");
       qc.invalidateQueries({ queryKey: ["journal"] });
     },
-    onError: () => toast.error("Não consegui salvar."),
+    onError: (e: unknown) => {
+      const msg = (e as { message?: string })?.message ?? "";
+      toast.error(msg.includes("Limite") ? msg : "Não consegui salvar.");
+    },
   });
 
   const remove = useMutation({
@@ -99,7 +106,7 @@ function Diario() {
   const patterns = useMutation({
     mutationFn: async () => await analisar({ data: undefined }),
     onSuccess: (r) => setInsight(r),
-    onError: () => toast.error("Não consegui analisar agora."),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Não consegui analisar agora."),
   });
 
   const limite = access.maxJournalEntries;
@@ -199,13 +206,29 @@ function Diario() {
         <Button
           variant="outline"
           title={access.canUseAI ? undefined : "Disponível no plano Premium"}
-          onClick={() => patterns.mutate()}
+          onClick={() => (consent.granted ? patterns.mutate() : setAskConsent(true))}
           disabled={patterns.isPending || !access.canUseAI}
         >
           <Sparkles className="size-4" />
           {patterns.isPending ? "Analisando..." : "Analisar meus registros"}
         </Button>
       </div>
+      <AIConsentDialog
+        open={askConsent}
+        onOpenChange={setAskConsent}
+        onAccept={async () => {
+          await consent.set.mutateAsync(true);
+          toast.success("Autorização registrada. Você pode revogar em Meus dados.");
+          patterns.mutate();
+        }}
+        onDecline={async () => {
+          await consent.set.mutateAsync(false);
+          toast("Tudo bem, nada foi enviado.");
+        }}
+      />
+      {access.canUseAI && consent.granted ? (
+        <p className="mt-1 text-xs text-muted-foreground">✅ Você autorizou o envio dos registros à IA. Revogue em Meus dados.</p>
+      ) : null}
       {!access.canUseAI ? (
         <p className="mt-1 text-xs text-muted-foreground">
           🔒 “Analisar meus registros” está disponível no plano Premium.

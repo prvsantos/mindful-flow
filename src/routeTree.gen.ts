@@ -13,11 +13,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as GuiasRouteImport } from './routes/guias'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as AuthenticatedAcessosRouteImport } from './routes/_authenticated/acessos'
 import { Route as AuthenticatedAtualizacoesRouteImport } from './routes/_authenticated/atualizacoes'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
 import { Route as AuthenticatedMenteRouteImport } from './routes/_authenticated/mente'
+import { Route as AuthenticatedMeusDadosRouteImport } from './routes/_authenticated/meus-dados'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +39,11 @@ const AuthRoute = AuthRouteImport.update({
 const GuiasRoute = GuiasRouteImport.update({
   id: '/guias',
   path: '/guias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAcessosRoute = AuthenticatedAcessosRouteImport.update({
@@ -65,6 +72,11 @@ const AuthenticatedMenteRoute = AuthenticatedMenteRouteImport.update({
   path: '/mente',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMeusDadosRoute = AuthenticatedMeusDadosRouteImport.update({
+  id: '/meus-dados',
+  path: '/meus-dados',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -75,22 +87,26 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/acessos': typeof AuthenticatedAcessosRoute
   '/atualizacoes': typeof AuthenticatedAtualizacoesRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/mente': typeof AuthenticatedMenteRoute
+  '/meus-dados': typeof AuthenticatedMeusDadosRoute
   '/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/acessos': typeof AuthenticatedAcessosRoute
   '/atualizacoes': typeof AuthenticatedAtualizacoesRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/mente': typeof AuthenticatedMenteRoute
+  '/meus-dados': typeof AuthenticatedMeusDadosRoute
   '/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRoutesById {
@@ -99,11 +115,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/guias': typeof GuiasRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/_authenticated/acessos': typeof AuthenticatedAcessosRoute
   '/_authenticated/atualizacoes': typeof AuthenticatedAtualizacoesRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
   '/_authenticated/mente': typeof AuthenticatedMenteRoute
+  '/_authenticated/meus-dados': typeof AuthenticatedMeusDadosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
 }
 export interface FileRouteTypes {
@@ -112,22 +130,26 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/guias'
+    | '/privacidade'
     | '/acessos'
     | '/atualizacoes'
     | '/categorias'
     | '/diario'
     | '/mente'
+    | '/meus-dados'
     | '/painel'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/guias'
+    | '/privacidade'
     | '/acessos'
     | '/atualizacoes'
     | '/categorias'
     | '/diario'
     | '/mente'
+    | '/meus-dados'
     | '/painel'
   id:
     | '__root__'
@@ -135,11 +157,13 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/guias'
+    | '/privacidade'
     | '/_authenticated/acessos'
     | '/_authenticated/atualizacoes'
     | '/_authenticated/categorias'
     | '/_authenticated/diario'
     | '/_authenticated/mente'
+    | '/_authenticated/meus-dados'
     | '/_authenticated/painel'
   fileRoutesById: FileRoutesById
 }
@@ -148,6 +172,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   GuiasRoute: typeof GuiasRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,6 +203,13 @@ declare module '@tanstack/react-router' {
       path: '/guias'
       fullPath: '/guias'
       preLoaderRoute: typeof GuiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/acessos': {
@@ -215,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMenteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/meus-dados': {
+      id: '/_authenticated/meus-dados'
+      path: '/meus-dados'
+      fullPath: '/meus-dados'
+      preLoaderRoute: typeof AuthenticatedMeusDadosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/painel': {
       id: '/_authenticated/painel'
       path: '/painel'
@@ -231,6 +270,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
   AuthenticatedMenteRoute: typeof AuthenticatedMenteRoute
+  AuthenticatedMeusDadosRoute: typeof AuthenticatedMeusDadosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
 }
 
@@ -240,6 +280,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
   AuthenticatedMenteRoute: AuthenticatedMenteRoute,
+  AuthenticatedMeusDadosRoute: AuthenticatedMeusDadosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
 }
 
@@ -251,6 +292,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   GuiasRoute: GuiasRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

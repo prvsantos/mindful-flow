@@ -155,7 +155,10 @@ function Painel() {
       setDueAt("");
       qc.invalidateQueries({ queryKey: ["tasks"] });
     },
-    onError: () => toast.error("Não consegui salvar a atividade."),
+    onError: (e: unknown) => {
+      const msg = (e as { message?: string })?.message ?? "";
+      toast.error(msg.includes("Limite") || msg.includes("Categoria") ? msg : "Não consegui salvar a atividade.");
+    },
   });
 
 
@@ -200,7 +203,10 @@ function Painel() {
       qc.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Atividade atualizada.");
     },
-    onError: () => toast.error("Não consegui atualizar a atividade."),
+    onError: (e: unknown) => {
+      const msg = (e as { message?: string })?.message ?? "";
+      toast.error(msg.includes("Limite") || msg.includes("Categoria") ? msg : "Não consegui atualizar a atividade.");
+    },
   });
 
   const remove = useMutation({

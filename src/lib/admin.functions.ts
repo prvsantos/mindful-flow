@@ -11,6 +11,12 @@ export type PortalUser = {
   role: "owner" | "premium" | "lite" | null;
 };
 
+function mask(email: string | null | undefined) {
+  if (!email || !email.includes("@")) return email ?? null;
+  const [u, d] = email.split("@");
+  return `${u!.slice(0, 2)}***@${d}`;
+}
+
 async function assertOwner(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
@@ -88,7 +94,7 @@ export const setPortalUserRole = createServerFn({ method: "POST" })
     await supabaseAdmin.from("admin_audit_logs").insert({
       action: data.role ? "role_set" : "role_removed",
       actor_id: context.userId,
-      actor_email: (context.claims as { email?: string })?.email ?? null,
+      actor_email: mask((context.claims as { email?: string })?.email),
       target_user_id: data.userId,
       details: { role: data.role },
     });
@@ -116,7 +122,7 @@ export const deletePortalUser = createServerFn({ method: "POST" })
     const { data: target } = await supabaseAdmin.auth.admin.getUserById(data.userId);
     const targetEmail = target?.user?.email ?? null;
 
-    for (const table of ["tasks", "brain_dumps", "journal_entries", "categories", "user_roles"] as const) {
+    for (const table of ["tasks", "brain_dumps", "journal_entries", "categories", "ai_usage", "user_consents", "user_roles"] as const) {
       const { error } = await supabaseAdmin.from(table).delete().eq("user_id", data.userId);
       if (error) throw error;
     }
@@ -127,11 +133,54 @@ export const deletePortalUser = createServerFn({ method: "POST" })
     await supabaseAdmin.from("admin_audit_logs").insert({
       action: "user_deleted",
       actor_id: context.userId,
-      actor_email: (context.claims as { email?: string })?.email ?? null,
+      actor_email: mask((context.claims as { email?: string })?.email),
       target_user_id: data.userId,
-      target_email: targetEmail,
+      target_email: mask(targetEmail),
       details: { deleted_at: new Date().toISOString() },
     });
 
+    return { ok: true };
+  });
+
+export type AIUsageSummary = {
+  settings: {
+    enabled: boolean; daily_limit_per_user: number; monthly_global_limit: number;
+    max_output_tokens: number; min_interval_seconds: number; alert_threshold_pct: number; retention_days: number;
+  };
+  today: number; month: number; month_errors: number;
+  month_tokens_in: number; month_tokens_out: number;
+  by_user: { email: string | null; calls: number }[];
+};
+
+export const getAIUsage = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AIUsageSummary> => {
+    await assertOwner(context);
+    const { data, error } = await context.supabase.rpc("ai_usage_summary");
+    if (error) throw new Error("Não consegui carregar o consumo da IA.");
+    return data as AIUsageSummary;
+  });
+
+export const updateAISettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      enabled: z.boolean(),
+      daily_limit_per_user: z.number().int().min(0).max(1000),
+      monthly_global_limit: z.number().int().min(0).max(1000000),
+      max_output_tokens: z.number().int().min(100).max(8000),
+    }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await assertOwner(context);
+    const { error } = await context.supabase.from("ai_settings").update({ ...data, updated_at: new Date().toISOString() }).eq("id", 1);
+    if (error) throw new Error("Não consegui salvar os limites.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("admin_audit_logs").insert({
+      action: "ai_settings_updated",
+      actor_id: context.userId,
+      actor_email: mask((context.claims as { email?: string })?.email),
+      details: data,
+    });
     return { ok: true };
   });

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAccess } from "@/hooks/use-access";
 import { deletePortalUser, listPortalUsers, setPortalUserRole } from "@/lib/admin.functions";
+import { ConsumoIA } from "@/components/app/ConsumoIA";
 
 export const Route = createFileRoute("/_authenticated/acessos")({
   head: () => ({
@@ -99,6 +100,7 @@ function Acessos() {
     >
       <div className="space-y-4">
         <ModoDeTeste />
+        {access.isAdmin ? <ConsumoIA /> : null}
 
       {!access.isAdmin ? (
         <p className="card-soft mt-4 p-5 text-sm text-muted-foreground">

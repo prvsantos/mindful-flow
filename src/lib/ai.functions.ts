@@ -32,9 +32,9 @@ export type PatternInsight = {
 export const organizeThoughts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ text: z.string().min(5).max(6000) }).parse(d))
-  .handler(async ({ data }): Promise<OrganizedPlan> => {
-    const { askAI, parseJson, SAFETY } = await import("./ai.server");
-    const raw = await askAI(
+  .handler(async ({ data, context }): Promise<OrganizedPlan> => {
+    const { runGuardedAI, parseJson, SAFETY } = await import("./ai.server");
+    const raw = await runGuardedAI(context, "organize",
       `${SAFETY}
 Tarefa: transformar um despejo mental desorganizado em um plano objetivo.
 Responda SOMENTE com JSON válido no formato:
@@ -53,9 +53,9 @@ Máximo de 8 tarefas. Títulos curtos e acionáveis, começando com verbo.`,
 export const sosOrganize = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ text: z.string().min(3).max(4000) }).parse(d))
-  .handler(async ({ data }): Promise<SosPlan> => {
-    const { askAI, parseJson, SAFETY } = await import("./ai.server");
-    const raw = await askAI(
+  .handler(async ({ data, context }): Promise<SosPlan> => {
+    const { runGuardedAI, parseJson, SAFETY } = await import("./ai.server");
+    const raw = await runGuardedAI(context, "sos",
       `${SAFETY}
 Tarefa: a pessoa está sobrecarregada AGORA. Conduza uma sequência curtíssima de regulação, sem perguntas extras.
 Responda SOMENTE com JSON válido:
@@ -74,23 +74,32 @@ Responda SOMENTE com JSON válido:
 export const findPatterns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<PatternInsight> => {
-    const { askAI, parseJson, SAFETY } = await import("./ai.server");
-    const { data: entries } = await context.supabase
+    const { runGuardedAI, parseJson, SAFETY } = await import("./ai.server");
+    // Consentimento conferido antes de ler qualquer registro.
+    const { data: consent } = await context.supabase.rpc("has_consent", { _purpose: "ai_journal_patterns" });
+    if (!consent) throw new Error("Para analisar seus registros, autorize antes o envio dos dados à IA.");
+    // Minimização: só os 10 registros mais recentes dos últimos 30 dias, sem identificadores.
+    const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
+    const { data: rows } = await context.supabase
       .from("journal_entries")
       .select("created_at, mood, energy, feeling, what_happened, thoughts, helped, not_helped")
+      .gte("created_at", since)
       .order("created_at", { ascending: false })
-      .limit(20);
+      .limit(10);
+    const entries = (rows ?? []).map((e: any) => ({ ...e, created_at: String(e.created_at).slice(0, 10) }));
 
     if (!entries || entries.length < 2) {
       return {
         padroes: [],
         o_que_ajuda: [],
-        sugestao: "Registre pelo menos 2 dias no diário para eu conseguir apontar padrões.",
+        sugestao: "Registre pelo menos 2 dias no diário (nos últimos 30 dias) para eu conseguir apontar padrões.",
         aviso: "Isto não é avaliação clínica.",
       };
     }
 
-    const raw = await askAI(
+    const raw = await runGuardedAI(
+      context,
+      "patterns",
       `${SAFETY}
 Tarefa: identificar PADRÕES observáveis nos registros de diário. Nada de diagnóstico, nada de rótulos clínicos.
 Responda SOMENTE com JSON válido:

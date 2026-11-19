@@ -75,6 +75,7 @@ function Mente() {
       toast.success("Adicionado às suas atividades.");
       qc.invalidateQueries({ queryKey: ["tasks"] });
     },
+    onError: (e: unknown) => toast.error((e as { message?: string })?.message ?? "Não consegui adicionar."),
   });
 
   return (

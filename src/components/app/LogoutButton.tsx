@@ -18,6 +18,7 @@ export function LogoutButton() {
       onClick={async () => {
         await queryClient.cancelQueries();
         queryClient.clear();
+        window.localStorage.removeItem("organizamente:view-as");
         await supabase.auth.signOut();
         navigate({ to: "/auth", replace: true });
       }}

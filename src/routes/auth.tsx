@@ -135,6 +135,10 @@ function AuthPage() {
         >
           {mode === "entrar" ? "Ainda não tenho conta" : "Já tenho conta"}
         </button>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Ao continuar, você concorda com o uso dos dados descrito em{" "}
+          <a href="/privacidade" className="underline">Privacidade</a>.
+        </p>
       </div>
     </div>
   );

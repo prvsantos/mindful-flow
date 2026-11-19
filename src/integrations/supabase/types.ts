@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -44,6 +44,99 @@ export type Database = {
           id?: string
           target_email?: string | null
           target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_settings: {
+        Row: {
+          alert_threshold_pct: number
+          daily_limit_per_user: number
+          enabled: boolean
+          id: number
+          max_output_tokens: number
+          min_interval_seconds: number
+          monthly_global_limit: number
+          retention_days: number
+          updated_at: string
+        }
+        Insert: {
+          alert_threshold_pct?: number
+          daily_limit_per_user?: number
+          enabled?: boolean
+          id?: number
+          max_output_tokens?: number
+          min_interval_seconds?: number
+          monthly_global_limit?: number
+          retention_days?: number
+          updated_at?: string
+        }
+        Update: {
+          alert_threshold_pct?: number
+          daily_limit_per_user?: number
+          enabled?: boolean
+          id?: number
+          max_output_tokens?: number
+          min_interval_seconds?: number
+          monthly_global_limit?: number
+          retention_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_usage: {
+        Row: {
+          created_at: string
+          est_cost_usd: number | null
+          feature: string
+          finished_at: string | null
+          id: string
+          input_tokens: number | null
+          model: string | null
+          output_tokens: number | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          est_cost_usd?: number | null
+          feature: string
+          finished_at?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          status?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          est_cost_usd?: number | null
+          feature?: string
+          finished_at?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_config: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
@@ -188,6 +281,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_consents: {
+        Row: {
+          created_at: string
+          granted: boolean
+          id: string
+          notice_version: string
+          purpose: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted: boolean
+          id?: string
+          notice_version: string
+          purpose: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          granted?: boolean
+          id?: string
+          notice_version?: string
+          purpose?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -214,12 +334,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ai_begin_call: { Args: { _feature: string }; Returns: Json }
+      ai_finish_call: {
+        Args: {
+          _cost: number
+          _id: string
+          _in: number
+          _model: string
+          _out: number
+          _status: string
+        }
+        Returns: undefined
+      }
+      ai_usage_summary: { Args: never; Returns: Json }
+      has_consent: {
+        Args: { _purpose: string; _uid?: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      mask_email: { Args: { _email: string }; Returns: string }
+      my_effective_role: {
+        Args: { _uid?: string }
+        Returns: Database["public"]["Enums"]["app_role"]
       }
       sync_my_role: {
         Args: never

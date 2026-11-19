@@ -1,4 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { VIEW_AS_STORAGE_KEY } from "@/lib/privacy";
 import {
   Brain,
   BookHeart,
@@ -10,6 +12,7 @@ import {
   Tags,
   Megaphone,
   ShieldCheck,
+  UserCog,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +42,7 @@ export function AppShell({
   children: ReactNode;
 }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const access = useAccess();
   const nav = NAV.filter(
     (i) => !("adminOnly" in i && i.adminOnly) || access.isAdmin || (i.to === "/acessos" && access.realRole === "owner"),
@@ -71,6 +75,9 @@ export function AppShell({
             <span className="hidden rounded-full bg-primary/12 px-2.5 py-1 text-[11px] font-semibold text-primary sm:inline">
               {access.label}
             </span>
+            <Button asChild variant="ghost" size="icon" aria-label="Meus dados" title="Meus dados e privacidade">
+              <Link to="/meus-dados"><UserCog className="size-4" /></Link>
+            </Button>
             <ThemeToggle />
             <Button
               variant="ghost"
@@ -79,6 +86,9 @@ export function AppShell({
               title="Sair"
               className="text-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive"
               onClick={async () => {
+                await queryClient.cancelQueries();
+                queryClient.clear();
+                window.localStorage.removeItem(VIEW_AS_STORAGE_KEY);
                 await supabase.auth.signOut();
                 navigate({ to: "/auth" });
               }}
@@ -93,6 +103,9 @@ export function AppShell({
         <h1 className="font-display text-2xl font-bold md:text-3xl">{title}</h1>
         {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
         <div className="mt-6">{children}</div>
+        <p className="mt-10 text-center text-xs text-muted-foreground">
+          <Link to="/privacidade" className="underline">Privacidade e seus dados</Link>
+        </p>
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur md:hidden">
