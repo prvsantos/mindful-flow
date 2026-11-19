@@ -1,7 +1,6 @@
 # Portal OrganizaMente
 
-- [x] Adicionar notas opcionais às atividades.
-- [x] Permitir editar título, nota, categoria, prioridade e prazo.
-- [x] Exibir notas no desktop/tablet e sob demanda no celular.
-- [x] Preparar instalação como PWA com manifesto e ícones.
-- [x] Validar build e fluxo de edição no preview.
+- [x] Fase 1 — auditoria de segurança/LGPD.
+- [x] Fase 2 — limites no banco, IA protegida e com cota, consentimento, Privacidade, Meus dados, admin por UUID, retenção 180 dias, testes.
+- [ ] Confirmar limites da IA (aguardando resposta; usando 20/dia e 1.000/mês).
+- [ ] Próxima etapa: MFA do administrador, backup/restauração.

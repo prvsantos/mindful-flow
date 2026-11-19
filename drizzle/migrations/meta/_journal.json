@@ -8,6 +8,13 @@
       "when": 1795106520929,
       "tag": "0000_security_lgpd_phase2",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795107305518,
+      "tag": "0001_revoke_default_grants",
+      "breakpoints": true
     }
   ]
 }

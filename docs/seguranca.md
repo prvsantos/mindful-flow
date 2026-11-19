@@ -55,3 +55,29 @@ direciona para ajuda profissional e CVV 188 em sinais de crise.
 - `admin_audit_logs` guarda somente ação, autor, alvo e data/hora — nunca o conteúdo.
 - Execução das funções `sync_my_role()` e `has_role()` foi revogada do papel anônimo;
   apenas sessões autenticadas podem chamá-las.
+
+## Fase 2 — Segurança, LGPD e controle da IA (19.11.2026)
+
+- **Limites no banco**: gatilhos aplicam os limites do plano Lite (3 tarefas abertas por categoria, 4 registros no diário,
+  2 categorias próprias) usando o perfil real (`my_effective_role`). A interface só reflete o que o banco garante.
+- **Categorias**: `enforce_task_rules` só aceita áreas padrão ou categorias da própria conta (substituiu `tasks_area_valid`).
+- **IA protegida no servidor**: toda chamada passa por `ai_begin_call` (login, perfil Premium/Admin, consentimento,
+  1 chamada por vez, intervalo mínimo, limite diário por pessoa, teto mensal global, IA ligada/desligada) e termina em
+  `ai_finish_call`. A tabela `ai_usage` guarda só função, modelo, tokens e status — nunca texto. Respostas limitadas por
+  `max_output_tokens`.
+- **Consentimento**: `user_consents` guarda o histórico (finalidade, versão do aviso, data). Sem consentimento vigente,
+  `findPatterns` não lê nem envia o diário. Envio minimizado: até 10 registros dos últimos 30 dias, só com a data.
+- **Administrador por UUID** em `app_config` (sem acesso pela API). O e-mail saiu das funções; continua apenas no
+  histórico antigo do repositório.
+- **Retenção**: textos de "Minha cabeça" mais antigos que `ai_settings.retention_days` (180) são apagados a cada novo registro
+  da própria conta (não há agendador no plano atual).
+- **Direitos do titular**: página `/privacidade`, área `/meus-dados` (exportar JSON, revogar autorização, excluir a conta).
+- **Auditoria** com e-mails mascarados (ex.: pa***@gmail.com). Visitantes sem login não têm privilégio nas tabelas.
+- **Sessão**: os dois botões Sair limpam o cache da tela e o "testar como".
+- **Testes**: `tests/security/api-security.test.ts` (11 cenários, API real com sessões verdadeiras) — todos aprovados.
+
+### Pendências / próxima etapa
+- MFA para o administrador.
+- Backup e restauração: verificar o que o plano oferece antes de contratar algo.
+- Custo em reais por chamada: a plataforma não fornece; o painel mostra chamadas e tokens.
+- Remover o e-mail do histórico do Git exige reescrever o repositório (fora do alcance daqui).

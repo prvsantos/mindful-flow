@@ -28,6 +28,13 @@ export const CHANGE_TYPES: Record<ChangeType, { label: string; emoji: string; ch
 /** Histórico do portal — mais recente primeiro. */
 export const CHANGELOG: ChangeEntry[] = [
   {
+    data: "2026-11-19T14:00:00-03:00",
+    tipo: "seguranca",
+    titulo: "Proteção reforçada dos dados e controle da IA",
+    detalhe:
+      "Limites dos planos e acesso à IA agora são garantidos pelo servidor e pelo banco, não só pela tela. A análise do Diário pede autorização específica (revogável) e envia o mínimo necessário. Novas páginas Privacidade e Meus dados (baixar cópia, revogar autorização, excluir conta). Painel de consumo da IA com limites diário e mensal. Administrador identificado sem e-mail no código e auditoria com e-mails mascarados.",
+  },
+  {
     data: "2026-09-03T15:55:00-03:00",
     tipo: "novidade",
     titulo: "Notas mais claras, prioridades vivas e botões ajustados",
